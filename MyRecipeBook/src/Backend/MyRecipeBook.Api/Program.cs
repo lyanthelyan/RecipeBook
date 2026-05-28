@@ -1,17 +1,18 @@
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
+using MyRecipeBook.Api.Filters;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddControllers();
-builder.Services.AddSwaggerGen(); // Swagger Configuration
+builder.Services.AddSwaggerGen();
 builder.Services.AddOpenApi();
 
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
-    // Supported languages
+  
     var supportedCultures = new List<CultureInfo>
     {
         new CultureInfo("en"),
@@ -19,23 +20,23 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
         new CultureInfo("es")
     };
 
-    // Default language
+    
     options.DefaultRequestCulture = new RequestCulture("en");
 
-    // Formatting cultures (dates, numbers, currency)
+    
     options.SupportedCultures = supportedCultures;
 
-    // UI/message cultures
+    
     options.SupportedUICultures = supportedCultures;
 
-    // Gets user language from browser
+    
     options.RequestCultureProviders = new List<IRequestCultureProvider>
     {
         new AcceptLanguageHeaderRequestCultureProvider()
     };
 });
 
-
+builder.Services.AddMvc(options => options.Filters.Add<ExceptionFilter>());
 
 var app = builder.Build();
 
@@ -46,8 +47,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     
-    app.UseSwagger(); //Swagger Configuration
-    app.UseSwaggerUI(); //Swagger Configuration
+    app.UseSwagger(); 
+    app.UseSwaggerUI(); 
 }
 
 app.UseHttpsRedirection();

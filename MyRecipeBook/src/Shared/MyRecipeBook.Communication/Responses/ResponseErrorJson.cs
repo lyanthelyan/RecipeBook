@@ -4,6 +4,17 @@ using System.Text;
 
 namespace MyRecipeBook.Communication.Responses;
 
-internal class ResponseErrorJson
+public class ResponseErrorJson
 {
+    public List<string> Errors { get; private set; }
+
+    public ResponseErrorJson(List<string> errorMessages)
+    {
+        Errors = errorMessages;
+    }
+
+    public ResponseErrorJson(string errorMessage)
+    {
+        Errors = new List<string> { errorMessage};
+    }
 }
