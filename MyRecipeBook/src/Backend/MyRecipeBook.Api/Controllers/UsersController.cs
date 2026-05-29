@@ -10,11 +10,11 @@ public class UsersController : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> Register([FromBody]RequestRegisterUserAccountJson request)
-    {
-        var useCase = new RegisterUserAccountUseCase();
-        useCase.Execute(request);
+    {       
+            var useCase = new RegisterUserAccountUseCase();
+            useCase.Execute(request);
 
-        return Created();
+            return Created();
     }
 
 
