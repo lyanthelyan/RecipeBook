@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MyRecipeBook.Communication.Responses;
+﻿namespace MyRecipeBook.Communication.Responses;
 
 public class ResponseErrorJson
 {

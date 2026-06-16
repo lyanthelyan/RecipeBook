@@ -2,14 +2,24 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
 using MyRecipeBook.Api.Filters;
 using System.Globalization;
+using MyRecipeBook.Application;
+using MyRecipeBook.Infrastructure;
+using MyRecipeBook.Api.Converters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers() //String converter
+    .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new StringConverter()));
 builder.Services.AddSwaggerGen();
 builder.Services.AddOpenApi();
 
+//Dependency injection
+builder.Services
+    .AddInfrastructure()
+    .AddApplication();
+
+//Localization configuration
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
   
@@ -36,10 +46,14 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     };
 });
 
+//Global exception handling
 builder.Services.AddMvc(options => options.Filters.Add<ExceptionFilter>());
+
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 var app = builder.Build();
 
+//Localization middleware
 var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
 app.UseRequestLocalization(localizationOptions.Value);
 
