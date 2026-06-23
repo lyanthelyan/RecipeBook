@@ -1,17 +1,30 @@
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
+using MyRecipeBook.Api.Filters;
 using System.Globalization;
+using MyRecipeBook.Application;
+using MyRecipeBook.Infrastructure;
+using MyRecipeBook.Api.Converters;
+using Microsoft.EntityFrameworkCore.Storage;
+using MyRecipeBook.Infrastructure.Migrations;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddControllers();
-builder.Services.AddSwaggerGen(); // Swagger Configuration
+builder.Services.AddControllers() //String converter
+    .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new StringConverter()));
+builder.Services.AddSwaggerGen();
 builder.Services.AddOpenApi();
 
+//Dependency injection
+builder.Services
+    .AddInfrastructure(builder.Configuration)
+    .AddApplication();
+
+//Localization configuration
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
-    // Supported languages
+  
     var supportedCultures = new List<CultureInfo>
     {
         new CultureInfo("en"),
@@ -19,26 +32,30 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
         new CultureInfo("es")
     };
 
-    // Default language
+    
     options.DefaultRequestCulture = new RequestCulture("en");
 
-    // Formatting cultures (dates, numbers, currency)
+    
     options.SupportedCultures = supportedCultures;
 
-    // UI/message cultures
+    
     options.SupportedUICultures = supportedCultures;
 
-    // Gets user language from browser
+    
     options.RequestCultureProviders = new List<IRequestCultureProvider>
     {
         new AcceptLanguageHeaderRequestCultureProvider()
     };
 });
 
-
+//Global exception handling
+builder.Services.AddMvc(options => options.Filters.Add<ExceptionFilter>());
+ 
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 var app = builder.Build();
 
+//Localization middleware
 var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
 app.UseRequestLocalization(localizationOptions.Value);
 
@@ -46,8 +63,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     
-    app.UseSwagger(); //Swagger Configuration
-    app.UseSwaggerUI(); //Swagger Configuration
+    app.UseSwagger(); 
+    app.UseSwaggerUI(); 
 }
 
 app.UseHttpsRedirection();
@@ -56,4 +73,12 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+await ExecuteMigrations();
+
 app.Run();
+
+async Task ExecuteMigrations()
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    DatabaseMigration.ExecuteMigrations(scope.ServiceProvider);
+}

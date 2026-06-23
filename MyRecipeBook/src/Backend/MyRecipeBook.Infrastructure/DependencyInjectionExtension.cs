@@ -1,0 +1,40 @@
+﻿using FluentMigrator.Runner;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using MyRecipeBook.Domain.Repositories;
+using MyRecipeBook.Domain.Repositories.User;
+using MyRecipeBook.Domain.Security.PasswordHashing;
+using MyRecipeBook.Infrastructure.DataAcess;
+using MyRecipeBook.Infrastructure.DataAcess.Repositories;
+using MyRecipeBook.Infrastructure.Security.PasswordHashing;
+using System.Reflection;
+
+namespace MyRecipeBook.Infrastructure;
+
+public static class DependencyInjectionExtension
+{
+    extension(IServiceCollection services)
+    {
+        public IServiceCollection AddInfrastructure(IConfiguration configuration)
+        {
+            services.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
+            services.AddScoped<IUserWriteOnlyRepository, UserRepository>();
+            services.AddScoped<IUserReadOnlyRepository, UserRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddDbContext<MyRecipeBookDbContext>(options =>
+            {
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+            });
+            services.AddFluentMigratorCore().ConfigureRunner(config =>
+            {
+                config
+                    .AddSqlServer()
+                    .WithGlobalConnectionString(configuration.GetConnectionString("DefaultConnection"))
+                    .ScanIn(Assembly.Load("MyRecipeBook.Infrastructure"))
+                    .For.All();
+            }).AddLogging(lb => lb.AddFluentMigratorConsole());
+            return services;
+        }
+    }
+}
