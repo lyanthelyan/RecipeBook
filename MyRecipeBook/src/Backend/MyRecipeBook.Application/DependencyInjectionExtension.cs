@@ -10,6 +10,7 @@ public static class DependencyInjectionExtension
         public IServiceCollection AddApplication()
         {
             services.AddScoped<IRegisterUserAccountUseCase, RegisterUserAccountUseCase>();
+           
             return services;
         }
     }
