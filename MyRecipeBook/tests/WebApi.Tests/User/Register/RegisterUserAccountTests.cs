@@ -1,20 +1,30 @@
 ﻿using CommonTestUtilities.Rquests;
-using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using MyRecipeBook.Domain.Extensions;
 using MyRecipeBook.Exception;
+using MyRecipeBook.Infrastructure.DataAcess;
 using Shouldly;
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using WebApi.Tests.InlineData;
 
 namespace WebApi.Tests.User.Register;
-public class RegisterUserAccountTests : IClassFixture<WebApplicationFactory<Program>>
+public class RegisterUserAccountTests : IClassFixture<MyRecipeBookApplicationFactory>
 {
+    private const string REQUEST_URI = "/users";
     private readonly HttpClient _httpClient;
+    private readonly MyRecipeBookDbContext _dbContext;
 
-    public RegisterUserAccountTests(WebApplicationFactory<Program> factory)
+    public RegisterUserAccountTests(MyRecipeBookApplicationFactory factory)
     {
         _httpClient = factory.CreateClient();
+
+        var scope = factory.Services.CreateScope();
+
+        _dbContext = scope.ServiceProvider.GetRequiredService<MyRecipeBookDbContext>();
     }
 
     [Fact]
@@ -23,7 +33,7 @@ public class RegisterUserAccountTests : IClassFixture<WebApplicationFactory<Prog
         // Arrange
         var request = RequestRegisterUserAccountJsonBuilder.Build();
         // Act
-        var response = await _httpClient.PostAsJsonAsync("/users", request);
+        var response = await _httpClient.PostAsJsonAsync(REQUEST_URI, request);
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
@@ -33,22 +43,31 @@ public class RegisterUserAccountTests : IClassFixture<WebApplicationFactory<Prog
         responseData.RootElement.GetProperty("name").GetString().ShouldBe(request.Name);
         responseData.RootElement.GetProperty("tokens").GetProperty("accessToken").GetString().ShouldBeEmpty();
 
+        var userExists = await _dbContext.Users.AnyAsync(user => user.Active && user.Name.Equals(request.Name) && user.Email.Equals(request.Email));
 
+        userExists.ShouldBeTrue();
     }
 
-    [Fact]
-    public async Task Validate_ShouldBeAnErrorResponse_WhenNameIsEmpty()
+    [Theory]
+    [ClassData(typeof(CultureInlineData))]
+    public async Task Validate_ShouldBeAnErrorResponse_WhenNameIsEmpty(string culture)
     {
         var request = RequestRegisterUserAccountJsonBuilder.Build();
         request.Name = string.Empty;
 
-        var response = await _httpClient.PostAsJsonAsync("/users", request);
+        _httpClient.DefaultRequestHeaders.AcceptLanguage.Clear();
+        _httpClient.DefaultRequestHeaders.AcceptLanguage.ParseAdd(culture);
+
+        var response = await _httpClient.PostAsJsonAsync(REQUEST_URI, request);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         
         await using var responseBody = await response.Content.ReadAsStreamAsync();
         var responseData = await JsonDocument.ParseAsync(responseBody);
-        
+
+        var expectedErrorMessage = ResourceMessagesException.ResourceManager.GetString("VALIDATION_NAME_REQUIRED", new CultureInfo(culture));
+
+
         var errors = responseData.RootElement.GetProperty("errors").EnumerateArray();
         errors.ShouldSatisfyAllConditions(errorsList =>
         {
@@ -58,9 +77,11 @@ public class RegisterUserAccountTests : IClassFixture<WebApplicationFactory<Prog
             .IsNotEmpty() 
             && error
             .GetString()!
-            .Equals(ResourceMessagesException.VALIDATION_NAME_REQUIRED));
-
+            .Equals(expectedErrorMessage));
         });
+        var userExists = await _dbContext.Users.AnyAsync(user => user.Active && user.Name.Equals(request.Name) && user.Email.Equals(request.Email));
+
+        userExists.ShouldBeFalse();
     }
 
 }
