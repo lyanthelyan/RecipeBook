@@ -27,21 +27,38 @@ jobs:
 
       - name: Build
         run: dotnet build MyRecipeBook.slnx --no-restore
-      
+
       - name: Test with Coverage
         run: >
-          dotnet test MyRecipeBook.slnx 
-          --no-build 
+          dotnet test MyRecipeBook.slnx
+          --no-build
           --settings coverage.runsettings
           --collect:"XPlat Code Coverage"
           --logger "trx"
           --results-directory TestResults
-      
-      - name: Upload test results and coverage
+
+      - name: Install ReportGenerator
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+
+      - name: Generate coverage report
+        run: >
+          reportgenerator
+          "-reports:TestResults/**/coverage.cobertura.xml"
+          "-targetdir:CoverageReport"
+          "-reporttypes:Html"
+
+      - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results-and-coverage
+          name: test-results
           path: MyRecipeBook/TestResults/**
-       
+          if-no-files-found: warn
 
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: MyRecipeBook/CoverageReport/**
+          if-no-files-found: warn
