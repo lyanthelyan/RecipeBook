@@ -7,7 +7,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     defaults:
@@ -15,7 +14,6 @@ jobs:
         working-directory: MyRecipeBook
 
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -29,7 +27,21 @@ jobs:
 
       - name: Build
         run: dotnet build MyRecipeBook.slnx --no-restore
-
-      - name: Test
-        run: dotnet test MyRecipeBook.slnx --no-build
+      
+      - name: Test with Coverage
+        run: >
+          dotnet test MyRecipeBook.slnx 
+          --no-build 
+          --settings cover.runsettings
+          --collect:"XPlat Code Coverage"
+          --logger "trx"
+          --results-directory TestResults
+      
+      - name: Upload test results and coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-and-coverage
+          path: MyRecipeBook/TestResults/**
+       
 
