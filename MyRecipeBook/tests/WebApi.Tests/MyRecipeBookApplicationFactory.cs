@@ -34,8 +34,9 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
         _connectionString = _container.GetConnectionString();
     }
 
-    public async Task DisposeAsync()
+    async Task IAsyncLifetime.DisposeAsync()
     {
+        await base.DisposeAsync();
         await _container.DisposeAsync();
     }
 }
