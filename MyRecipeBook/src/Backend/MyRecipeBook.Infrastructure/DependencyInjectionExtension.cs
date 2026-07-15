@@ -30,7 +30,11 @@ public static class DependencyInjectionExtension
             {
                 config
                     .AddSqlServer()
-                    .WithGlobalConnectionString(configuration.GetConnectionString("DefaultConnection"))
+                    .WithGlobalConnectionString(_=> 
+                    {
+                        var connectionString = configuration.GetConnectionString("DefaultConnection");
+                        return connectionString;
+                    })
                     .ScanIn(Assembly.Load("MyRecipeBook.Infrastructure"))
                     .For.All();
             }).AddLogging(lb => lb.AddFluentMigratorConsole());
