@@ -24,4 +24,11 @@ internal sealed class UserRepository : IUserWriteOnlyRepository, IUserReadOnlyRe
         user.Active && 
         user.Email.Equals(email));
     }
+
+    public async Task<User?> GetByEmail(string email)
+    {
+        return await _dbContext.Users
+            .AsNoTracking()
+            .SingleOrDefaultAsync(user => user.Active && user.Email.Equals(email));
+    }   
 }
