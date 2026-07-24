@@ -22,4 +22,5 @@
     <ProjectReference Include="..\MyRecipeBook.Infrastructure\MyRecipeBook.Infrastructure.csproj" />
   </ItemGroup>
 
+
 </Project>

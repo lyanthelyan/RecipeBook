@@ -12,7 +12,7 @@ namespace WebApi.Tests;
 
 public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAsyncLifetime
 {
-    public UserIdentityManager User1 { get; private set; }
+    public UserIdentityManager User1 { get; private set; } = null!;
 
     private string? _connectionString;
     
@@ -24,6 +24,7 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
 
         builder.ConfigureAppConfiguration((context, configuration) =>
         {
+
             configuration.AddInMemoryCollection(
                 new Dictionary<string, string?>
                 {

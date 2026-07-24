@@ -42,7 +42,7 @@ public class LoginWithEmailAndPasswordTests : BaseIntegrationTest
 
         var responseData = await JsonDocument.ParseAsync(responseBody);
         responseData.RootElement.GetProperty("name").GetString().ShouldBe(_user1.GetName());
-        responseData.RootElement.GetProperty("tokens").GetProperty("accessToken").GetString().ShouldBeEmpty();
+        responseData.RootElement.GetProperty("tokens").GetProperty("accessToken").GetString().ShouldNotBeNullOrEmpty();
     }
 
     [Theory]
@@ -58,7 +58,7 @@ public class LoginWithEmailAndPasswordTests : BaseIntegrationTest
         await using var responseBody = await response.Content.ReadAsStreamAsync();
         var responseData = await JsonDocument.ParseAsync(responseBody);
 
-        var expectedErrorMessage = ResourceMessagesException.ResourceManager.GetString("VALIDATION_LOGIN_REQUIRED", new CultureInfo(culture));
+        var expectedErrorMessage = ResourceMessagesException.ResourceManager.GetString("VALIDATION_LOGIN_INVALID", new CultureInfo(culture));
 
 
         var errors = responseData.RootElement.GetProperty("errors").EnumerateArray();
