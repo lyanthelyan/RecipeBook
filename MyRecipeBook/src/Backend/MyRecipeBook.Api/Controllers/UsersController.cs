@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MyRecipeBook.Application.UseCases.User.Register;
 using MyRecipeBook.Communication.Requests;
 using MyRecipeBook.Communication.Responses;
@@ -18,6 +19,12 @@ public class UsersController : ControllerBase
     {                   
         var result = await useCase.Execute(request);
         return Created(string.Empty, result);
+    }
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> GetUserProfile()
+    {
+        return Ok();
     }
 
 }

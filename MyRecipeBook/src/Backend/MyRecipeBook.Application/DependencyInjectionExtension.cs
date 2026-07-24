@@ -11,9 +11,13 @@ public static class DependencyInjectionExtension
     {
         public IServiceCollection AddApplication()
         {
+            services.AddUseCases();
+            return services;
+        }
+        private void AddUseCases()
+        {
             services.AddScoped<IRegisterUserAccountUseCase, RegisterUserAccountUseCase>();
             services.AddScoped<ILoginWithEmailAndPasswordUseCase, LoginWithEmailAndPasswordUseCase>();
-            return services;
         }
     }
 }

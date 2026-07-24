@@ -20,23 +20,13 @@ public static class DependencyInjectionExtension
     {
         public IServiceCollection AddInfrastructure(IConfiguration configuration)
         {
-            services.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
-            services.AddScoped<IUserWriteOnlyRepository, UserRepository>();
-            services.AddScoped<IUserReadOnlyRepository, UserRepository>();
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-     
-            services.AddScoped<IAcessTokensGenerator>(provider => 
-            {
-                var expirationTimeInMinutes = configuration.GetValue<uint>("Jwt:ExpirationTimeMinutes");
-                var signingkey = configuration.GetValue<string>("Jwt:SigningKey")!;
-                return new JwtTokenHandler(expirationTimeInMinutes, signingkey);
-            });
-            
+            services.AddRepositories();
+            services.AddTokensHandlers(configuration);
+            services.AddScoped<IPasswordHasher, Argon2PasswordHasher>();       
             services.AddDbContext<MyRecipeBookDbContext>(options =>
             {
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
-            });
-            
+            });            
             services.AddFluentMigratorCore().ConfigureRunner(config =>
             {
                 config
@@ -51,6 +41,22 @@ public static class DependencyInjectionExtension
             }).AddLogging(lb => lb.AddFluentMigratorConsole());
             
             return services;
+        }
+        
+        private void AddRepositories()
+        {
+            services.AddScoped<IUserWriteOnlyRepository, UserRepository>();
+            services.AddScoped<IUserReadOnlyRepository, UserRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+        }
+        private void AddTokensHandlers(IConfiguration configuration)
+        {
+            services.AddScoped<IAcessTokensGenerator>(provider =>
+            {
+                var expirationTimeInMinutes = configuration.GetValue<uint>("Jwt:ExpirationTimeMinutes");
+                var signingkey = configuration.GetValue<string>("Jwt:SigningKey")!;
+                return new JwtTokenHandler(expirationTimeInMinutes, signingkey);
+            });
         }
     }
 }
