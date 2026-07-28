@@ -5,9 +5,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using MyRecipeBook.Api.Converters;
 using MyRecipeBook.Api.Filters;
+using MyRecipeBook.Api.Token;
 using MyRecipeBook.Application;
 using MyRecipeBook.Communication.Responses;
 using MyRecipeBook.Domain.Repositories.User;
+using MyRecipeBook.Domain.Security.Tokens;
 using MyRecipeBook.Exception;
 using MyRecipeBook.Infrastructure;
 using MyRecipeBook.Infrastructure.Migrations;
@@ -48,7 +50,9 @@ builder.Services.AddOpenApi();
 builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddApplication();
-
+builder.Services
+    .AddScoped<IAccessTokenProvider, HttpContextTokenProvider>();
+builder.Services.AddHttpContextAccessor();
 //Localization configuration
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
