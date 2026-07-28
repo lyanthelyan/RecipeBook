@@ -17,6 +17,6 @@ public class GetUserProfileUseCase : IGetUserProfileUseCase
     {
         var loggedUser = await _loggedUser.Get();
 
-        return loggedUser.Adapt < ResponseUserProfileJson>();
+        return loggedUser.Adapt <ResponseUserProfileJson>();
     }
 }
