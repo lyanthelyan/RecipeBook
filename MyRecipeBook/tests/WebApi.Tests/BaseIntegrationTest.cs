@@ -47,8 +47,6 @@ public abstract class BaseIntegrationTest : IClassFixture<MyRecipeBookApplicatio
         if (accessToken.IsNotEmpty())
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-
-
     }
 
     public void Dispose()

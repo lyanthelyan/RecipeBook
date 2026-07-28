@@ -7,7 +7,7 @@ namespace WebApi.Tests.User.Profile;
 
 public class GetUserProfileTest : BaseIntegrationTest
 {
-    private const string REQUEST_URI = "/user";
+    private const string REQUEST_URI = "/users";
     private readonly UserIdentityManager _user1;
     public GetUserProfileTest(MyRecipeBookApplicationFactory factory) : base(factory)
     {
