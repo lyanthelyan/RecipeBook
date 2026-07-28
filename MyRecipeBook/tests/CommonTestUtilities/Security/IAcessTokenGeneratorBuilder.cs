@@ -8,9 +8,9 @@ namespace CommonTestUtilities.Security;
 
 public class IAcessTokenGeneratorBuilder
 {
-    public static IAcessTokensGenerator Build()
+    public static IAccessTokensGenerator Build()
     {
-        var mock = new Mock<IAcessTokensGenerator>();
+        var mock = new Mock<IAccessTokensGenerator>();
 
         var fakeToken = new Faker().Random.String2(32, "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
 

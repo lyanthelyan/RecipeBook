@@ -11,12 +11,12 @@ public class LoginWithEmailAndPasswordUseCase : ILoginWithEmailAndPasswordUseCas
 {
     private readonly IUserReadOnlyRepository _userReadOnlyRepository;
     private readonly IPasswordHasher _passwordHasher;
-    private readonly IAcessTokensGenerator _acessTokenGenerator;
+    private readonly IAccessTokensGenerator _acessTokenGenerator;
 
     public LoginWithEmailAndPasswordUseCase(
         IUserReadOnlyRepository userReadOnlyRepository,
         IPasswordHasher passwordHasher,
-        IAcessTokensGenerator acessTokenGenerator)
+        IAccessTokensGenerator acessTokenGenerator)
     {
         _userReadOnlyRepository = userReadOnlyRepository;
         _passwordHasher = passwordHasher;

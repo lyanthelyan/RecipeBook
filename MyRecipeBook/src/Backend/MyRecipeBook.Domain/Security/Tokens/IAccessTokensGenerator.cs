@@ -2,7 +2,7 @@
 
 namespace MyRecipeBook.Domain.Security.Tokens;
 
-public interface IAcessTokensGenerator
+public interface IAccessTokensGenerator
 {
     string Generate(User user);
 }

@@ -17,13 +17,13 @@ public class RegisterUserAccountUseCase : IRegisterUserAccountUseCase
     private readonly IUserWriteOnlyRepository _userWriteOnlyRepository;
     private readonly IUserReadOnlyRepository _userReadOnlyRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IAcessTokensGenerator _acessTokenGenerator;
+    private readonly IAccessTokensGenerator _acessTokenGenerator;
     public RegisterUserAccountUseCase(
         IPasswordHasher passwordHasher, 
         IUserWriteOnlyRepository userWriteOnlyRepository,
         IUnitOfWork unitOfWork,
         IUserReadOnlyRepository userReadOnlyRepository,
-        IAcessTokensGenerator acessTokenGenerator)
+        IAccessTokensGenerator acessTokenGenerator)
     {
         _passwordHasher = passwordHasher;
         _userWriteOnlyRepository = userWriteOnlyRepository;

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyRecipeBook.Domain.Security.PasswordHashing;
+using MyRecipeBook.Domain.Security.Tokens;
 using MyRecipeBook.Infrastructure.DataAcess;
 using Testcontainers.MsSql;
 using WebApi.Tests.Resources;
@@ -46,6 +47,8 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
             .GetRequiredService<MyRecipeBookDbContext>();
         var passwordHasher = scope.ServiceProvider
             .GetRequiredService<IPasswordHasher>();
+        var accessTokenGenerator = scope.ServiceProvider
+            .GetRequiredService<IAccessTokensGenerator>();
         
         var (user, password) = UserBuilder.Build();
 
@@ -53,8 +56,9 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
 
         await dbContext.Users.AddAsync(user);
         await dbContext.SaveChangesAsync();
+        var user1AccessToken = accessTokenGenerator.Generate(user);
         
-        User1 = new UserIdentityManager(user, password);
+        User1 = new UserIdentityManager(user, password, user1AccessToken);
     }
 
     async Task IAsyncLifetime.DisposeAsync()
