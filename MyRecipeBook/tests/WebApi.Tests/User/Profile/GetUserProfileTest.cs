@@ -15,7 +15,7 @@ public class GetUserProfileTest : BaseIntegrationTest
     }
     [Fact]
     public async Task Success()
-    {
+    { 
         var response = await Get(REQUEST_URI, accessToken: _user1.GetAccessToken());
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);

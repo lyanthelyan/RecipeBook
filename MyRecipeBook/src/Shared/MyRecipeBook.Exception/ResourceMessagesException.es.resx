@@ -123,6 +123,9 @@
   <data name="VALIDATION_ACCESS_TOKEN_REQUIRED" xml:space="preserve">
     <value>¡Ups! Esta solicitud requiere un token de acceso.</value>
   </data>
+  <data name="VALIDATION_CURRENT_PASSWORD" xml:space="preserve">
+    <value>La contrasenã actual informada es incorrecta</value>
+  </data>
   <data name="VALIDATION_EMAIL_ALREADY_EXISTS" xml:space="preserve">
     <value>¡Ups! Este correo electrónico ya está en uso.</value>
   </data>
@@ -137,6 +140,9 @@
   </data>
   <data name="VALIDATION_NAME_REQUIRED" xml:space="preserve">
     <value>¡Ups! El nombre es obligatorio.</value>
+  </data>
+  <data name="VALIDATION_PASSWORD_MIN_LENGTH" xml:space="preserve">
+    <value>¡Ups! La contraseña debe tener al menos 6 caracteres.</value>
   </data>
   <data name="VALIDATION_PASSWORD_REQUIRED" xml:space="preserve">
     <value>¡Ups! Se requiere una contraseña.</value>

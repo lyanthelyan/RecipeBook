@@ -1,4 +1,6 @@
-﻿using CommonTestUtilities.Rquests;
+﻿using CommonTestUtilities.Requests;
+using CommonTestUtilities.Rquests;
+using MyRecipeBook.Application.UseCases.User.ChangePassword;
 using MyRecipeBook.Application.UseCases.User.Register;
 using MyRecipeBook.Communication.Requests;
 using MyRecipeBook.Exception;
@@ -74,6 +76,28 @@ public class RegisterUserAccountValidatorTests
         });
     }
     [Fact]
+    public void Validate_ShouldHaveError_WhenEmailIsInvalid()
+    {
+        // Arrange
+        var request = RequestRegisterUserAccountJsonBuilder.Build();
+        request.Email = "test.com";
+
+        var validator = new RegisterUserAccountValidator();
+
+        // Act
+        var result = validator.Validate(request);
+
+        // Assert
+        result.IsValid.ShouldBeFalse();
+        result.Errors.ShouldSatisfyAllConditions(errors =>
+        {
+            errors.Count.ShouldBe(1);
+            errors.ShouldContain(error => error.ErrorMessage.Equals(ResourceMessagesException.VALIDATION_EMAIL_INVALID));
+        });
+
+
+    }
+    [Fact]
     public void Validate_ShouldHaveError_WhenPasswordIsEmpty()
     {
         // Arrange
@@ -95,27 +119,27 @@ public class RegisterUserAccountValidatorTests
 
 
     }
-    [Fact]
-    public void Validate_ShouldHaveError_WhenEmailIsInvalid()
+    
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    public void Validate_ShouldHaveError_WhenPasswordLengthIsLessThan6(int passwordLength)
     {
-        // Arrange
-        var request = RequestRegisterUserAccountJsonBuilder.Build();
-        request.Email = "test.com";
-
         var validator = new RegisterUserAccountValidator();
 
-        // Act
-        var result = validator.Validate(request);
+        var request = RequestRegisterUserAccountJsonBuilder.Build(passwordLength);
 
-        // Assert
+        var result = validator.Validate(request);
         result.IsValid.ShouldBeFalse();
         result.Errors.ShouldSatisfyAllConditions(errors =>
         {
             errors.Count.ShouldBe(1);
-            errors.ShouldContain(error => error.ErrorMessage.Equals(ResourceMessagesException.VALIDATION_EMAIL_INVALID));
+            errors.ShouldContain(e => e.ErrorMessage.Equals(ResourceMessagesException.VALIDATION_PASSWORD_MIN_LENGTH));
+
         });
-
-
     }
 
 }
