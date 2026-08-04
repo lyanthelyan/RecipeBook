@@ -46,12 +46,12 @@ public class UpdateUserUseCaseTests
             exception.GetErrorMessages().ShouldSatisfyAllConditions(errorMessages =>
             {
                 errorMessages.Count.ShouldBe(1);
-                errorMessages.ShouldContain(string.Format(ResourceMessagesException.VALIDATION_NAME_REQUIRED));
+                errorMessages.ShouldContain(ResourceMessagesException.VALIDATION_NAME_REQUIRED);
             });
         });
 
-        user.Name.ShouldBe(request.Name);
-        user.Email.ShouldBe(request.Email);
+        user.Name.ShouldNotBe(request.Name);
+        user.Email.ShouldNotBe(request.Email);
     }
 
     [Fact]
@@ -60,6 +60,7 @@ public class UpdateUserUseCaseTests
         var (user, _) = UserBuilder.Build();
 
         var request = RequestUpdateUserJsonBuilder.Build();
+
         var useCase = CreateUseCase(user, request.Email);
 
         var exception = await useCase.Execute(request).ShouldThrowAsync<ErrorOnValidationException>();
@@ -73,8 +74,8 @@ public class UpdateUserUseCaseTests
             });
 
         });
-        user.Name.ShouldBe(request.Name);
-        user.Email.ShouldBe(request.Email);
+        user.Name.ShouldNotBe(request.Name);
+        user.Email.ShouldNotBe(request.Email);
     }
 
     private static UpdateUserUseCase CreateUseCase(MyRecipeBook.Domain.Entities.User user, string? emailThatAlreadyExists = null)

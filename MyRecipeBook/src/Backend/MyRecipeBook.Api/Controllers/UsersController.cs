@@ -46,7 +46,7 @@ public class UsersController : ControllerBase
         return NoContent();
     }
 
-    [HttpPatch("password")]
+    [HttpPut("password")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status400BadRequest)]

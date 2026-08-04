@@ -12,8 +12,6 @@ namespace WebApi.Tests.User.Register;
 public class RegisterUserAccountTests : BaseIntegrationTest
 {
     private const string REQUEST_URI = "/users";
-
-
     public RegisterUserAccountTests(MyRecipeBookApplicationFactory factory) : base(factory)
     {
 

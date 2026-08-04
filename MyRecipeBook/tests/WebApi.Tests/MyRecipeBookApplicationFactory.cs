@@ -13,7 +13,8 @@ namespace WebApi.Tests;
 
 public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAsyncLifetime
 {
-    public UserIdentityManager User1 { get; private set; } = null!;
+    public UserIdentityManager User1 { get; private set; } = default!;
+    public string TokenUserNotFoundInDatabase { get; private set; } = string.Empty;
 
     private string? _connectionString;
     
@@ -59,6 +60,9 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
         var user1AccessToken = accessTokenGenerator.Generate(user);
         
         User1 = new UserIdentityManager(user, password, user1AccessToken);
+
+        var (userNotSaved, _) = UserBuilder.Build();
+        TokenUserNotFoundInDatabase = accessTokenGenerator.Generate(userNotSaved);
     }
 
     async Task IAsyncLifetime.DisposeAsync()
