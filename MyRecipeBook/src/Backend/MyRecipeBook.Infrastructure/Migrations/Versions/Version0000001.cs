@@ -21,3 +21,4 @@ public class Version0000001 : Migration
         Delete.Table("Users");
     }  
 }
+ 
