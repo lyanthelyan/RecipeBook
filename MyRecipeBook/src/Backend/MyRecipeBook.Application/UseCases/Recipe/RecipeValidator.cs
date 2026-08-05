@@ -34,6 +34,10 @@ public class RecipeValidator : AbstractValidator<RequestRecipeJson>
             .NotNull()
             .WithMessage(ResourceMessagesException.VALIDATION_RECIPE_INSTRUCTIONS_REQUIRED);
 
+        RuleFor(request => request.Instructions)
+            .Must(instructions => instructions is null || instructions.Select(instruction => instruction.Order).Distinct().Count() == instructions.Count)
+            .WithMessage(ResourceMessagesException.VALIDATION_RECIPE_INSTRUCTION_ORDER_DUPLICATED);
+
         RuleForEach(recipe => recipe.Instructions).ChildRules(instruction =>
         {
             instruction.RuleFor(item => item.Order)
@@ -49,7 +53,10 @@ public class RecipeValidator : AbstractValidator<RequestRecipeJson>
         });
 
         RuleFor(request => request.DishTypes)
+            .Cascade(CascadeMode.Stop)
             .NotNull()
+            .WithMessage(ResourceMessagesException.VALIDATION_RECIPE_DISH_TYPES_REQUIRED)
+            .NotEmpty()
             .WithMessage(ResourceMessagesException.VALIDATION_RECIPE_DISH_TYPES_REQUIRED);
 
         RuleForEach(request => request.DishTypes)

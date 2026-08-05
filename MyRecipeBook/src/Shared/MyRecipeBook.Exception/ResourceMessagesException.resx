@@ -186,4 +186,7 @@
   <data name="VALIDATION_RECIPE_INSTRUCTION_ORDER_INVALID" xml:space="preserve">
     <value>Oops! Instruction order is invalid.</value>
   </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTION_ORDER_DUPLICATED" xml:space="preserve">
+    <value>Oops! Instruction orders must not be duplicated.</value>
+  </data>
 </root>
