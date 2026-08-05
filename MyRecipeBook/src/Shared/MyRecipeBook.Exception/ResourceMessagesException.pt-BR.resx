@@ -150,4 +150,40 @@
   <data name="VALIDATION_RESOURCE_ACCESS_DENIED" xml:space="preserve">
     <value>Ops! Você não tem acesso a este recurso.</value>
   </data>
+  <data name="VALIDATION_RECIPE_TITLE_REQUIRED" xml:space="preserve">
+    <value>Ops! O título da receita é obrigatório.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_TITLE_MAX_LENGTH" xml:space="preserve">
+    <value>Ops! O título da receita deve ter no máximo 250 caracteres.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_COOK_TIME_INVALID" xml:space="preserve">
+    <value>Ops! O tempo de preparo da receita é inválido.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INGREDIENTS_REQUIRED" xml:space="preserve">
+    <value>Ops! A lista de ingredientes é obrigatória.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INGREDIENT_REQUIRED" xml:space="preserve">
+    <value>Ops! O ingrediente é obrigatório.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INGREDIENT_MAX_LENGTH" xml:space="preserve">
+    <value>Ops! O ingrediente deve ter no máximo 250 caracteres.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTIONS_REQUIRED" xml:space="preserve">
+    <value>Ops! A lista de instruções é obrigatória.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTION_REQUIRED" xml:space="preserve">
+    <value>Ops! A instrução é obrigatória.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTION_MAX_LENGTH" xml:space="preserve">
+    <value>Ops! A instrução deve ter no máximo 2000 caracteres.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_DISH_TYPES_REQUIRED" xml:space="preserve">
+    <value>Ops! A lista de tipos de prato é obrigatória.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_DISH_TYPE_INVALID" xml:space="preserve">
+    <value>Ops! O tipo de prato é inválido.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTION_ORDER_INVALID" xml:space="preserve">
+    <value>Ops! A ordem da instrução é inválida.</value>
+  </data>
 </root>

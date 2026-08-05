@@ -150,4 +150,40 @@
   <data name="VALIDATION_RESOURCE_ACCESS_DENIED" xml:space="preserve">
     <value>Oops! You don't have access to this resource.</value>
   </data>
+  <data name="VALIDATION_RECIPE_TITLE_REQUIRED" xml:space="preserve">
+    <value>Oops! Recipe title is required.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_TITLE_MAX_LENGTH" xml:space="preserve">
+    <value>Oops! Recipe title must not exceed 250 characters.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_COOK_TIME_INVALID" xml:space="preserve">
+    <value>Oops! Recipe cook time is invalid.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INGREDIENTS_REQUIRED" xml:space="preserve">
+    <value>Oops! The ingredients list is required.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INGREDIENT_REQUIRED" xml:space="preserve">
+    <value>Oops! Ingredient is required.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INGREDIENT_MAX_LENGTH" xml:space="preserve">
+    <value>Oops! Ingredient must not exceed 250 characters.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTIONS_REQUIRED" xml:space="preserve">
+    <value>Oops! The instructions list is required.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTION_REQUIRED" xml:space="preserve">
+    <value>Oops! Instruction is required.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTION_MAX_LENGTH" xml:space="preserve">
+    <value>Oops! Instruction must not exceed 2000 characters.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_DISH_TYPES_REQUIRED" xml:space="preserve">
+    <value>Oops! The dish types list is required.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_DISH_TYPE_INVALID" xml:space="preserve">
+    <value>Oops! Dish type is invalid.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTION_ORDER_INVALID" xml:space="preserve">
+    <value>Oops! Instruction order is invalid.</value>
+  </data>
 </root>
