@@ -8,6 +8,11 @@ internal  static class MapsterConfiguration
 {
     internal static void Configure()
     {
+
+        TypeAdapterConfig<RequestRegisterUserAccountJson, User>
+            .NewConfig()
+            .Ignore(destination => destination.Password);
+
         TypeAdapterConfig<RequestRecipeJson, Recipe>
             .NewConfig()
             .Map(destination => destination.Ingredients,
