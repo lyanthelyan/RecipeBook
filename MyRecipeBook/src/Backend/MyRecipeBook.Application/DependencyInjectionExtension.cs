@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using MyRecipeBook.Application.Mappings;
 using MyRecipeBook.Application.UseCases.Login.WithEmailAndPassword;
+using MyRecipeBook.Application.UseCases.Recipe.Register;
 using MyRecipeBook.Application.UseCases.User.ChangePassword;
 using MyRecipeBook.Application.UseCases.User.Profile;
 using MyRecipeBook.Application.UseCases.User.Register;
 using MyRecipeBook.Application.UseCases.User.Update;
-using MyRecipeBook.Domain.Repositories.User;
-using MyRecipeBook.Domain.Security.Tokens;
 
 namespace MyRecipeBook.Application;
 
@@ -15,6 +15,7 @@ public static class DependencyInjectionExtension
     {
         public IServiceCollection AddApplication()
         {
+            MapsterConfiguration.Configure();
             services.AddUseCases();
             return services;
         }
@@ -25,6 +26,8 @@ public static class DependencyInjectionExtension
             services.AddScoped<IGetUserProfileUseCase, GetUserProfileUseCase>();
             services.AddScoped<IChangePasswordUseCase, ChangePasswordUseCase>();
             services.AddScoped<IUpdateUserUseCase, UpdateUserUseCase>();
+            services.AddScoped<IRegisterRecipeUseCase, RegisterRecipeUseCase>();
+            
         }
     }
 }
