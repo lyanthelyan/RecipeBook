@@ -18,7 +18,7 @@ public class RegisterUserAccountTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task Sucess()
+    public async Task Success()
     {
         // Arrange
         var request = RequestRegisterUserAccountJsonBuilder.Build();

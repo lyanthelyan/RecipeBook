@@ -6,13 +6,14 @@ using MyRecipeBook.Domain.Extensions;
 using MyRecipeBook.Exception;
 using MyRecipeBook.Exception.ExceptionsBase;
 using Shouldly;
+using System.Net;
 
 namespace UseCases.Tests.User.Register;
 
 public class RegisterUserAccountUseCaseTests
 {
     [Fact]
-    public async Task Sucess()
+    public async Task Success()
     {
         // Arrange
         var request = RequestRegisterUserAccountJsonBuilder.Build();
@@ -39,6 +40,7 @@ public class RegisterUserAccountUseCaseTests
         var useCase = CreateUseCase();
 
         var exception = await useCase.Execute(request).ShouldThrowAsync<ErrorOnValidationException>();
+        exception.GetStatusCode().ShouldBe(HttpStatusCode.BadRequest);
         exception.GetErrorMessages().ShouldSatisfyAllConditions(errorMessages => 
         {
             errorMessages.Count.ShouldBe(1);
