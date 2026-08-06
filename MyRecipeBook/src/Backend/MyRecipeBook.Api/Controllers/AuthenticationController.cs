@@ -10,7 +10,7 @@ namespace MyRecipeBook.Api.Controllers;
 public class AuthenticationController : ControllerBase
 {
     [HttpPost]
-    [ProducesResponseType(typeof(ResponseRegisteredUserJson), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ResponseRegisteredUserJson), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Login(
         [FromBody] RequestLoginJson request,
