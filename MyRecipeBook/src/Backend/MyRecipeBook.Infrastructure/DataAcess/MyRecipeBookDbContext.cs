@@ -14,14 +14,9 @@ internal class MyRecipeBookDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<RecipeDishType>(entity =>
-        {
-            entity.ToTable("RecipeDishTypes");
-
-            entity.Property(dishType => dishType.Type)
-                .HasColumnName("Types");
-        });
-
+        modelBuilder.Entity<RecipeDishType>()
+            .ToTable("RecipeDishTypes");
+        
         modelBuilder.Entity<RecipeIngredient>()
             .ToTable("RecipeIngredients");
 

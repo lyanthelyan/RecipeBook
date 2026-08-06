@@ -31,7 +31,7 @@ public class Version0000002 : Migration
         Create.Table("RecipeDishTypes")
             .WithColumn("Id").AsGuid().NotNullable().PrimaryKey()
             .WithColumn("Active").AsBoolean().NotNullable().WithDefaultValue(true)
-            .WithColumn("Types").AsInt32().NotNullable()
+            .WithColumn("Type").AsInt32().NotNullable()
             .WithColumn("RecipeId").AsGuid().NotNullable().ForeignKey("Recipes", "Id").OnDelete(Rule.Cascade);
     }
 
