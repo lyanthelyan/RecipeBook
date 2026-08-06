@@ -12,7 +12,7 @@ public class Version0000002 : Migration
             .WithColumn("Id").AsGuid().NotNullable().PrimaryKey()
             .WithColumn("Active").AsBoolean().NotNullable().WithDefaultValue(true)
             .WithColumn("Title").AsString(250).NotNullable()
-            .WithColumn("CookTime").AsInt32().NotNullable()
+            .WithColumn("CookTime").AsString(50).NotNullable()
             .WithColumn("UserId").AsGuid().NotNullable().ForeignKey("Users", "Id");
 
         Create.Table("RecipeIngredients")
@@ -31,7 +31,7 @@ public class Version0000002 : Migration
         Create.Table("RecipeDishTypes")
             .WithColumn("Id").AsGuid().NotNullable().PrimaryKey()
             .WithColumn("Active").AsBoolean().NotNullable().WithDefaultValue(true)
-            .WithColumn("Type").AsInt32().NotNullable()
+            .WithColumn("Type").AsString(50).NotNullable()
             .WithColumn("RecipeId").AsGuid().NotNullable().ForeignKey("Recipes", "Id").OnDelete(Rule.Cascade);
     }
 
