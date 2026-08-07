@@ -227,6 +227,12 @@ namespace MyRecipeBook.Exception {
                 return ResourceManager.GetString("VALIDATION_RECIPE_INSTRUCTION_ORDER_DUPLICATED", resourceCulture);
             }
         }
+
+        public static string VALIDATION_RECIPE_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("VALIDATION_RECIPE_NOT_FOUND", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Oops! Instruction is required..

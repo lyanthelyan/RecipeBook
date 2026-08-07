@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MyRecipeBook.Application.UseCases.Recipe.GetById;
 using MyRecipeBook.Application.UseCases.Recipe.Register;
 using MyRecipeBook.Communication.Requests;
 using MyRecipeBook.Communication.Responses;
@@ -21,6 +22,17 @@ public class RecipesController : ControllerBase
         var result = await useCase.Execute(request);
 
         return Created(string.Empty, result);
+    }
+
+    [HttpGet("{recipeId}")]
+    [ProducesResponseType(typeof(ResponseRegisteredRecipeJson), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetById(
+        [FromRoute] Guid recipeId, 
+        [FromServices] IGetRecipeByIdUseCase useCase)
+    {
+        var recipe = await useCase.Execute(recipeId);
+        return Ok(recipe);
     }
 }
  
