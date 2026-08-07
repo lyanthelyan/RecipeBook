@@ -21,9 +21,13 @@ internal sealed class RecipeRepository : IRecipeWriteOnlyRepository, IRecipeRead
     {
         return await _dbContext.Recipes
             .AsNoTracking()
-            .FirstOrDefaultAsync(recipe => 
-                recipe.Active && 
-                recipe.Id == recipeId && 
+            .Include(recipe => recipe.Instructions.OrderBy(instruction => instruction.Order))
+            .Include(recipe => recipe.DishTypes)
+            .Include(recipe => recipe.Ingredients)
+            .FirstOrDefaultAsync(recipe =>
+                recipe.Active &&
+                recipe.Id == recipeId &&
                 recipe.UserId == userId);
+
     }
 }
