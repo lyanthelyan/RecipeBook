@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using MyRecipeBook.Domain.Entities;
 using MyRecipeBook.Domain.Repositories.Recipe;
 
 namespace MyRecipeBook.Infrastructure.DataAcess.Repositories;
 
-internal sealed class RecipeRepository : IRecipeWriteOnlyRepository, IRecipeReadOnlyRepository
+internal sealed class RecipeRepository : IRecipeWriteOnlyRepository, IRecipeReadOnlyRepository, IRecipeUpdateOnlyRepository
 {
     private readonly MyRecipeBookDbContext _dbContext;
     public RecipeRepository(MyRecipeBookDbContext dbContext)
@@ -17,18 +18,33 @@ internal sealed class RecipeRepository : IRecipeWriteOnlyRepository, IRecipeRead
         await _dbContext.Recipes.AddAsync(recipe);
     }
 
-    public async Task<Recipe?> GetById(Guid recipeId, Guid userId)
+     async Task<Recipe?> IRecipeReadOnlyRepository.GetById(Guid recipeId, Guid userId)
     {
-        return await _dbContext.Recipes
+        return await GetFullRecipe()
             .AsNoTracking()
-            .Include(recipe => recipe.Instructions.OrderBy(instruction => instruction.Order))
-            .Include(recipe => recipe.DishTypes)
-            .Include(recipe => recipe.Ingredients)
             .FirstOrDefaultAsync(recipe =>
                 recipe.Active &&
                 recipe.Id == recipeId &&
                 recipe.UserId == userId);
 
+    }
+
+     async Task<Recipe?> IRecipeUpdateOnlyRepository.GetById(Guid recipeId, Guid userId)
+    {
+        return await GetFullRecipe()
+            .FirstOrDefaultAsync(recipe =>
+                recipe.Active &&
+                recipe.Id == recipeId &&
+                recipe.UserId == userId);
+
+    }
+
+    private IIncludableQueryable<Recipe, ICollection<RecipeIngredient>> GetFullRecipe()
+    {
+        return _dbContext.Recipes
+            .Include(recipe => recipe.Instructions.OrderBy(instruction => instruction.Order))
+            .Include(recipe => recipe.DishTypes)
+            .Include(recipe => recipe.Ingredients);
     }
     public async Task<bool> DeleteById(Guid recipeId, Guid userId)
     {
