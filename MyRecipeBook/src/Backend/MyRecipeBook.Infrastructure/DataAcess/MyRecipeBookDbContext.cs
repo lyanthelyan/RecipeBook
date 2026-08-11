@@ -16,7 +16,8 @@ internal class MyRecipeBookDbContext : DbContext
 
         modelBuilder.Entity<RecipeDishType>()
             .ToTable("RecipeDishTypes")
-            .Property(dishType => dishType.Type).HasConversion<string>();
+            .Property(dishType => dishType.Type)
+            .HasConversion<string>();
         
         modelBuilder.Entity<RecipeIngredient>()
             .ToTable("RecipeIngredients");
@@ -27,5 +28,10 @@ internal class MyRecipeBookDbContext : DbContext
         modelBuilder.Entity<Recipe>()
             .Property(recipe => recipe.CookTime)
             .HasConversion<string>();
+
+        modelBuilder.Entity<Recipe>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(recipe => recipe.UserId);
     }
 }
