@@ -34,5 +34,16 @@ public class RecipesController : ControllerBase
         var recipe = await useCase.Execute(recipeId);
         return Ok(recipe);
     }
+
+    [HttpDelete("{recipeId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Delete(
+        [FromRoute] Guid recipeId,
+        [FromServices] IDeleteRecipeByIdUseCase useCase)
+    {
+        await useCase.Execute(recipeId);
+        return NoContent();
+    }
 }
  
