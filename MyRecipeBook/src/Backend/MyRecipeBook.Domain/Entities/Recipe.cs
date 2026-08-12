@@ -4,6 +4,7 @@ namespace MyRecipeBook.Domain.Entities;
 
 public class Recipe : EntityBase
 {
+    public DateTimeOffset CreatedOn { get; private set; } = DateTimeOffset.UtcNow;
     public string Title { get; set; } = string.Empty;
     public ICollection<RecipeIngredient> Ingredients { get; set; } = [];
     public ICollection<RecipeInstruction> Instructions { get; set; } = [];

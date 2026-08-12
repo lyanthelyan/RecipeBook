@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using MyRecipeBook.Domain.Entities;
 using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("WebApi.Tests")]
@@ -32,6 +33,10 @@ internal class MyRecipeBookDbContext : DbContext
         modelBuilder.Entity<Recipe>()
             .Property(recipe => recipe.CookTime)
             .HasConversion<string>();
+
+        modelBuilder.Entity<Recipe>()
+            .Property(recipe => recipe.CreatedOn)
+            .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
 
         modelBuilder.Entity<Recipe>()
             .HasOne<User>()
