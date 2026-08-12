@@ -1,4 +1,5 @@
-﻿using MyRecipeBook.Communication.Requests;
+﻿using Mapster;
+using MyRecipeBook.Communication.Requests;
 using MyRecipeBook.Domain.Identity;
 using MyRecipeBook.Domain.Repositories;
 using MyRecipeBook.Domain.Repositories.Recipe;
@@ -30,7 +31,8 @@ public class UpdateRecipeByIdUseCase : IUpdateRecipeByIdUseCase
         var recipe = await _repository.GetById(recipeId, _loggedUser.GetUserId());
         if (recipe is null)
             throw new NotFoundException(ResourceMessagesException.VALIDATION_RECIPE_NOT_FOUND);
-        
+
+        request.Adapt(recipe);
         
         await _unitOfWork.Commit();
     }

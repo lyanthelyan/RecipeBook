@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MyRecipeBook.Application.UseCases.Recipe.Delete;
 using MyRecipeBook.Application.UseCases.Recipe.GetById;
+using MyRecipeBook.Application.UseCases.Recipe.GetRecent;
 using MyRecipeBook.Application.UseCases.Recipe.Register;
 using MyRecipeBook.Application.UseCases.Recipe.Update;
 using MyRecipeBook.Communication.Requests;
@@ -55,10 +56,18 @@ public class RecipesController : ControllerBase
     [ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update(
         [FromRoute]Guid recipeId,
-        [FromRoute] RequestRecipeJson request,
+        [FromBody] RequestRecipeJson request,
         [FromServices] IUpdateRecipeByIdUseCase useCase)
     {
         await useCase.Execute(recipeId, request);
         return NoContent();
+    }
+
+    [HttpDelete("recent")]
+    [ProducesResponseType(typeof(ResponseRecipesJson), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRecent([FromServices] IGetRecentRecipesUseCase useCase)
+    {
+        var recipes = await useCase.Execute();
+        return Ok(recipes);
     }
 }

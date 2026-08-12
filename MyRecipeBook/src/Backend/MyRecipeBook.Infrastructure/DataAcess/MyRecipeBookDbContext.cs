@@ -18,12 +18,16 @@ internal class MyRecipeBookDbContext : DbContext
             .ToTable("RecipeDishTypes")
             .Property(dishType => dishType.Type)
             .HasConversion<string>();
-        
+        modelBuilder.Entity<RecipeDishType>()
+            .Property(dishType => dishType.Id).ValueGeneratedNever();
+
         modelBuilder.Entity<RecipeIngredient>()
-            .ToTable("RecipeIngredients");
+            .ToTable("RecipeIngredients")
+            .Property(ingredient => ingredient.Id).ValueGeneratedNever();
 
         modelBuilder.Entity<RecipeInstruction>()
-            .ToTable("RecipeInstructions");
+            .ToTable("RecipeInstructions")
+            .Property(instruction => instruction.Id).ValueGeneratedNever();
 
         modelBuilder.Entity<Recipe>()
             .Property(recipe => recipe.CookTime)
