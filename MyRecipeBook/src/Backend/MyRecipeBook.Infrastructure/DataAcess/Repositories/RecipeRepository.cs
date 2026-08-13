@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using MyRecipeBook.Domain.Dtos;
 using MyRecipeBook.Domain.Entities;
+using MyRecipeBook.Domain.Extensions;
 using MyRecipeBook.Domain.Repositories.Recipe;
 
 namespace MyRecipeBook.Infrastructure.DataAcess.Repositories;
@@ -18,7 +20,7 @@ internal sealed class RecipeRepository : IRecipeWriteOnlyRepository, IRecipeRead
         await _dbContext.Recipes.AddAsync(recipe);
     }
 
-     async Task<Recipe?> IRecipeReadOnlyRepository.GetById(Guid recipeId, Guid userId)
+    async Task<Recipe?> IRecipeReadOnlyRepository.GetById(Guid recipeId, Guid userId)
     {
         return await GetFullRecipe()
             .AsNoTracking()
@@ -29,7 +31,7 @@ internal sealed class RecipeRepository : IRecipeWriteOnlyRepository, IRecipeRead
 
     }
 
-     async Task<Recipe?> IRecipeUpdateOnlyRepository.GetById(Guid recipeId, Guid userId)
+    async Task<Recipe?> IRecipeUpdateOnlyRepository.GetById(Guid recipeId, Guid userId)
     {
         return await GetFullRecipe()
             .FirstOrDefaultAsync(recipe =>
@@ -48,7 +50,7 @@ internal sealed class RecipeRepository : IRecipeWriteOnlyRepository, IRecipeRead
     }
     public async Task<bool> DeleteById(Guid recipeId, Guid userId)
     {
-        var rows =  await _dbContext.Recipes
+        var rows = await _dbContext.Recipes
             .Where(recipe =>
                 recipe.Active &&
                 recipe.Id == recipeId &&
@@ -59,13 +61,37 @@ internal sealed class RecipeRepository : IRecipeWriteOnlyRepository, IRecipeRead
 
     }
 
-    public async Task<IList<Recipe>> GetRecentRecipes(Guid userId)
+    public async Task<IList<RecipeSummaryDto>> GetRecentRecipes(Guid userId)
     {
         return await _dbContext.Recipes
             .AsNoTracking()
             .Where(recipe => recipe.Active && recipe.UserId == userId)
             .OrderByDescending(recipe => recipe.CreatedOn)
             .Take(6)
+            .Select(recipe => new RecipeSummaryDto(recipe.Id, recipe.Title))
             .ToListAsync();
     }
+
+    public async Task<IList<RecipeSummaryDto>> FilterRecipes(Guid userId, RecipeFilterDto filter)
+    {
+        var query = _dbContext.Recipes
+            .AsNoTracking()
+            .Where(recipe => recipe.Active && recipe.UserId == userId);
+
+        if (filter.CookTime is not null)
+            query = query.Where(recipe => recipe.CookTime == filter.CookTime);
+
+        if (filter.SearchTerm.IsNotEmpty())
+            query = query.Where(recipe => recipe.Title.Contains(filter.SearchTerm) || 
+            recipe.Ingredients.Any(i => i.Item.Contains(filter.SearchTerm)));
+
+        if (filter.DishTypes.Any())
+        {
+            query = query.Where(recipe => 
+            recipe.DishTypes.Any(dt => filter.DishTypes.Contains(dt.Type)));
+        }
+
+        return await query.Select(recipe => new RecipeSummaryDto(recipe.Id, recipe.Title)).ToListAsync();
+    }
 }
+ 
