@@ -28,6 +28,24 @@ public class IRecipeReadOnlyRepositoryBuilder
         return this;
     }
 
+    public IRecipeReadOnlyRepositoryBuilder FilterRecipes(IList<Recipe> recipes)
+    {
+        _mock.Setup(repository => repository.FilterRecipes(It.IsAny<Guid>(), It.IsAny<RecipeFilterDto>()))
+            .ReturnsAsync(recipes.Select(recipe => new RecipeSummaryDto(recipe.Id, recipe.Title)).ToList());
+        return this;
+    }
+
+    public void VerifyFilterRecipes(Guid userId, RecipeFilterDto expectedFilter)
+    {
+        _mock.Verify(repository => repository.FilterRecipes(
+            userId,
+            It.Is<RecipeFilterDto>(filter =>
+                filter.SearchTerm == expectedFilter.SearchTerm &&
+                filter.CookTime == expectedFilter.CookTime &&
+                filter.DishTypes.SequenceEqual(expectedFilter.DishTypes))),
+            Times.Once);
+    }
+
     public IRecipeReadOnlyRepository Build()
     {   
         return _mock.Object;
