@@ -10,6 +10,7 @@ internal class MyRecipeBookDbContext : DbContext
     public MyRecipeBookDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions) { }
     public DbSet<User> Users { get; set; }
     public DbSet<Recipe> Recipes { get; set; }
+    public DbSet<VerificationCode> VerificationCodes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,8 +32,7 @@ internal class MyRecipeBookDbContext : DbContext
             .Property(instruction => instruction.Id).ValueGeneratedNever();
 
         modelBuilder.Entity<Recipe>()
-            .Property(recipe => recipe.CookTime)
-            .HasConversion<string>();
+            .Property(recipe => recipe.CookTime).HasConversion<string>();
 
         modelBuilder.Entity<Recipe>()
             .Property(recipe => recipe.CreatedOn)
@@ -42,5 +42,11 @@ internal class MyRecipeBookDbContext : DbContext
             .HasOne<User>()
             .WithMany()
             .HasForeignKey(recipe => recipe.UserId);
+
+        modelBuilder.Entity<VerificationCode>()
+            .Property(code => code.Type).HasConversion<string>();
+
+        modelBuilder.Entity<VerificationCode>()
+            .HasOne<User>().WithMany().HasForeignKey(code => code.UserId);
     }
 }
