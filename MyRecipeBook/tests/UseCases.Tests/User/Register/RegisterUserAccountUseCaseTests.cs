@@ -6,13 +6,14 @@ using MyRecipeBook.Domain.Extensions;
 using MyRecipeBook.Exception;
 using MyRecipeBook.Exception.ExceptionsBase;
 using Shouldly;
+using System.Net;
 
 namespace UseCases.Tests.User.Register;
 
 public class RegisterUserAccountUseCaseTests
 {
     [Fact]
-    public async Task Sucess()
+    public async Task Success()
     {
         // Arrange
         var request = RequestRegisterUserAccountJsonBuilder.Build();
@@ -25,7 +26,7 @@ public class RegisterUserAccountUseCaseTests
         result.ShouldNotBeNull();
         result.Tokens.ShouldNotBeNull();
         result.Name.ShouldBe(request.Name);
-        result.Tokens.AccessToken.ShouldBeNullOrEmpty();
+        result.Tokens.AccessToken.ShouldNotBeNullOrEmpty();
         result.Tokens.RefreshToken.ShouldBeNullOrEmpty();
 
     }
@@ -39,6 +40,7 @@ public class RegisterUserAccountUseCaseTests
         var useCase = CreateUseCase();
 
         var exception = await useCase.Execute(request).ShouldThrowAsync<ErrorOnValidationException>();
+        exception.GetStatusCode().ShouldBe(HttpStatusCode.BadRequest);
         exception.GetErrorMessages().ShouldSatisfyAllConditions(errorMessages => 
         {
             errorMessages.Count.ShouldBe(1);
@@ -65,6 +67,7 @@ public class RegisterUserAccountUseCaseTests
 
     private RegisterUserAccountUseCase CreateUseCase(string? emailThatAlreadyExists = null)
     {
+        var acessTokenGeneratorBuilder = IAcessTokenGeneratorBuilder.Build();
         var unitOfWork = IUnitOfWorkBuilder.Build();
         var userWriteOnlyRepository = IUserWriteOnlyRepositoriyBuilder.Build();
         var passwordHasher = new IPasswordHasherBuilder().Build();
@@ -74,6 +77,6 @@ public class RegisterUserAccountUseCaseTests
             userReadOnlyRepositoryBuilder.ExistActiveUserWithEmail(emailThatAlreadyExists);
         }
 
-        return new RegisterUserAccountUseCase(passwordHasher, userWriteOnlyRepository, unitOfWork, userReadOnlyRepositoryBuilder.Build());
+        return new RegisterUserAccountUseCase(passwordHasher, userWriteOnlyRepository, unitOfWork, userReadOnlyRepositoryBuilder.Build(), acessTokenGeneratorBuilder);
     }
 }

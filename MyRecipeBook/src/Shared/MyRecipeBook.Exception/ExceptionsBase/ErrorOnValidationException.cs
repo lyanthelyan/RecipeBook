@@ -1,4 +1,6 @@
-﻿namespace MyRecipeBook.Exception.ExceptionsBase;
+﻿using System.Net;
+
+namespace MyRecipeBook.Exception.ExceptionsBase;
 
 public class ErrorOnValidationException : MyRecipeBookException
 {
@@ -10,9 +12,12 @@ public class ErrorOnValidationException : MyRecipeBookException
         _errors = errorMessages;
     }
 
-    public List<string> GetErrorMessages()
+    public override List<string> GetErrorMessages()
     {
         return _errors;
     }
+
+    public override HttpStatusCode GetStatusCode() => HttpStatusCode.BadRequest;
+
 
 }

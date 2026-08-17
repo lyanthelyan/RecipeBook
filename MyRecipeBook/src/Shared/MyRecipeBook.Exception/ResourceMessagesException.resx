@@ -120,6 +120,12 @@
   <data name="UNKNOWN_ERROR" xml:space="preserve">
     <value>Unknown error.</value>
   </data>
+  <data name="VALIDATION_ACCESS_TOKEN_REQUIRED" xml:space="preserve">
+    <value>Oops! This request needs an access token.</value>
+  </data>
+  <data name="VALIDATION_CURRENT_PASSWORD" xml:space="preserve">
+    <value>The current password is incorrect.</value>
+  </data>
   <data name="VALIDATION_EMAIL_ALREADY_EXISTS" xml:space="preserve">
     <value>Oops! This email is already in use.</value>
   </data>
@@ -129,10 +135,61 @@
   <data name="VALIDATION_EMAIL_REQUIRED" xml:space="preserve">
     <value>Oops! Email is required.</value>
   </data>
+  <data name="VALIDATION_LOGIN_INVALID" xml:space="preserve">
+    <value>Oops! Invalid email or password.</value>
+  </data>
   <data name="VALIDATION_NAME_REQUIRED" xml:space="preserve">
     <value>Oops! Name is required.</value>
   </data>
+  <data name="VALIDATION_PASSWORD_MIN_LENGTH" xml:space="preserve">
+    <value>Oops! Password must be at least 6 characters long.</value>
+  </data>
   <data name="VALIDATION_PASSWORD_REQUIRED" xml:space="preserve">
     <value>Oops! Password if requird.</value>
+  </data>
+  <data name="VALIDATION_RESOURCE_ACCESS_DENIED" xml:space="preserve">
+    <value>Oops! You don't have access to this resource.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_TITLE_REQUIRED" xml:space="preserve">
+    <value>Oops! Recipe title is required.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_TITLE_MAX_LENGTH" xml:space="preserve">
+    <value>Oops! Recipe title must not exceed 250 characters.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_COOK_TIME_INVALID" xml:space="preserve">
+    <value>Oops! Recipe cook time is invalid.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INGREDIENTS_REQUIRED" xml:space="preserve">
+    <value>Oops! The ingredients list is required.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INGREDIENT_REQUIRED" xml:space="preserve">
+    <value>Oops! Ingredient is required.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INGREDIENT_MAX_LENGTH" xml:space="preserve">
+    <value>Oops! Ingredient must not exceed 250 characters.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTIONS_REQUIRED" xml:space="preserve">
+    <value>Oops! The instructions list is required.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTION_REQUIRED" xml:space="preserve">
+    <value>Oops! Instruction is required.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTION_MAX_LENGTH" xml:space="preserve">
+    <value>Oops! Instruction must not exceed 2000 characters.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_DISH_TYPES_REQUIRED" xml:space="preserve">
+    <value>Oops! The dish types list is required.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_DISH_TYPE_INVALID" xml:space="preserve">
+    <value>Oops! Dish type is invalid.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTION_ORDER_INVALID" xml:space="preserve">
+    <value>Oops! Instruction order is invalid.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTION_ORDER_DUPLICATED" xml:space="preserve">
+    <value>Oops! Instruction orders must not be duplicated.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_NOT_FOUND" xml:space="preserve">
+    <value>Oops! We couldn't find this recipe.</value>
   </data>
 </root>

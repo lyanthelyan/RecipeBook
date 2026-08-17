@@ -120,6 +120,12 @@
   <data name="UNKNOWN_ERROR" xml:space="preserve">
     <value>Error desconocido.</value>
   </data>
+  <data name="VALIDATION_ACCESS_TOKEN_REQUIRED" xml:space="preserve">
+    <value>¡Ups! Esta solicitud requiere un token de acceso.</value>
+  </data>
+  <data name="VALIDATION_CURRENT_PASSWORD" xml:space="preserve">
+    <value>La contrasenã actual informada es incorrecta</value>
+  </data>
   <data name="VALIDATION_EMAIL_ALREADY_EXISTS" xml:space="preserve">
     <value>¡Ups! Este correo electrónico ya está en uso.</value>
   </data>
@@ -129,10 +135,61 @@
   <data name="VALIDATION_EMAIL_REQUIRED" xml:space="preserve">
     <value>¡Ups! El correo electrónico es obligatorio.</value>
   </data>
+  <data name="VALIDATION_LOGIN_INVALID" xml:space="preserve">
+    <value>¡Ups! Correo electrónico o contraseña no válidos.</value>
+  </data>
   <data name="VALIDATION_NAME_REQUIRED" xml:space="preserve">
     <value>¡Ups! El nombre es obligatorio.</value>
   </data>
+  <data name="VALIDATION_PASSWORD_MIN_LENGTH" xml:space="preserve">
+    <value>¡Ups! La contraseña debe tener al menos 6 caracteres.</value>
+  </data>
   <data name="VALIDATION_PASSWORD_REQUIRED" xml:space="preserve">
     <value>¡Ups! Se requiere una contraseña.</value>
+  </data>
+  <data name="VALIDATION_RESOURCE_ACCESS_DENIED" xml:space="preserve">
+    <value>¡Ups! No tienes acceso a este recurso.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_TITLE_REQUIRED" xml:space="preserve">
+    <value>¡Ups! El título de la receta es obligatorio.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_TITLE_MAX_LENGTH" xml:space="preserve">
+    <value>¡Ups! El título de la receta no debe superar los 250 caracteres.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_COOK_TIME_INVALID" xml:space="preserve">
+    <value>¡Ups! El tiempo de preparación de la receta no es válido.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INGREDIENTS_REQUIRED" xml:space="preserve">
+    <value>¡Ups! La lista de ingredientes es obligatoria.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INGREDIENT_REQUIRED" xml:space="preserve">
+    <value>¡Ups! El ingrediente es obligatorio.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INGREDIENT_MAX_LENGTH" xml:space="preserve">
+    <value>¡Ups! El ingrediente no debe superar los 250 caracteres.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTIONS_REQUIRED" xml:space="preserve">
+    <value>¡Ups! La lista de instrucciones es obligatoria.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTION_REQUIRED" xml:space="preserve">
+    <value>¡Ups! La instrucción es obligatoria.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTION_MAX_LENGTH" xml:space="preserve">
+    <value>¡Ups! La instrucción no debe superar los 2000 caracteres.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_DISH_TYPES_REQUIRED" xml:space="preserve">
+    <value>¡Ups! La lista de tipos de plato es obligatoria.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_DISH_TYPE_INVALID" xml:space="preserve">
+    <value>¡Ups! El tipo de plato no es válido.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTION_ORDER_INVALID" xml:space="preserve">
+    <value>¡Ups! El orden de la instrucción no es válido.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_INSTRUCTION_ORDER_DUPLICATED" xml:space="preserve">
+    <value>¡Ups! Los órdenes de las instrucciones no pueden estar duplicados.</value>
+  </data>
+  <data name="VALIDATION_RECIPE_NOT_FOUND" xml:space="preserve">
+    <value>¡Ups! No pudimos encontrar esta receta.</value>
   </data>
 </root>

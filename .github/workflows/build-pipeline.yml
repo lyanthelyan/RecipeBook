@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: MyRecipeBook
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore MyRecipeBook.slnx
+
+      - name: Build
+        run: dotnet build MyRecipeBook.slnx --no-restore
+
+      - name: Test with Coverage
+        run: >
+          dotnet test MyRecipeBook.slnx
+          --no-build
+          --settings coverage.runsettings
+          --collect:"XPlat Code Coverage"
+          --logger "trx"
+          --results-directory TestResults
+
+      - name: Install ReportGenerator
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+
+      - name: Generate coverage report
+        run: >
+          reportgenerator
+          "-reports:TestResults/**/coverage.cobertura.xml"
+          "-targetdir:CoverageReport"
+          "-reporttypes:Html"
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: MyRecipeBook/TestResults/**
+          if-no-files-found: warn
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: MyRecipeBook/CoverageReport/**
+          if-no-files-found: warn
