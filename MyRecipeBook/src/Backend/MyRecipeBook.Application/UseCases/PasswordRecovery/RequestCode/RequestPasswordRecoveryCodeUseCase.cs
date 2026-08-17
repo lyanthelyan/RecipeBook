@@ -45,10 +45,11 @@ public class RequestPasswordRecoveryCodeUseCase : IRequestPasswordRecoveryCodeUs
             Type = VerificationCodeType.PasswordRecovery,
             UserId = user.Id
         };
+        
 
-       await _verificationCodeWriteOnlyRepository.Add(verificationCode);
+        await _verificationCodeWriteOnlyRepository.Add(verificationCode);
 
-       await _unitOfWork.Commit();
+        await _unitOfWork.Commit();
         //TODO: Send email with the code
         //await _emailService.SendPasswordRecoveryCode(
         //     user.Email,
