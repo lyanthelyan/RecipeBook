@@ -214,23 +214,20 @@ namespace MyRecipeBook.Exception {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Oops! Instruction order is invalid..
+        ///   Looks up a localized string similar to Oops! Instruction orders must not be duplicated..
         /// </summary>
-        public static string VALIDATION_RECIPE_INSTRUCTION_ORDER_INVALID {
-            get {
-                return ResourceManager.GetString("VALIDATION_RECIPE_INSTRUCTION_ORDER_INVALID", resourceCulture);
-            }
-        }
-
         public static string VALIDATION_RECIPE_INSTRUCTION_ORDER_DUPLICATED {
             get {
                 return ResourceManager.GetString("VALIDATION_RECIPE_INSTRUCTION_ORDER_DUPLICATED", resourceCulture);
             }
         }
-
-        public static string VALIDATION_RECIPE_NOT_FOUND {
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Oops! Instruction order is invalid..
+        /// </summary>
+        public static string VALIDATION_RECIPE_INSTRUCTION_ORDER_INVALID {
             get {
-                return ResourceManager.GetString("VALIDATION_RECIPE_NOT_FOUND", resourceCulture);
+                return ResourceManager.GetString("VALIDATION_RECIPE_INSTRUCTION_ORDER_INVALID", resourceCulture);
             }
         }
         
@@ -249,6 +246,15 @@ namespace MyRecipeBook.Exception {
         public static string VALIDATION_RECIPE_INSTRUCTIONS_REQUIRED {
             get {
                 return ResourceManager.GetString("VALIDATION_RECIPE_INSTRUCTIONS_REQUIRED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Oops! We couldn&apos;t find this recipe..
+        /// </summary>
+        public static string VALIDATION_RECIPE_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("VALIDATION_RECIPE_NOT_FOUND", resourceCulture);
             }
         }
         

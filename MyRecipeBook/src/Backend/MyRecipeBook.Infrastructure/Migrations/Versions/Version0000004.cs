@@ -13,6 +13,6 @@ public class Version0000004 : ForwardOnlyMigration
             .WithColumn("Code").AsString(6).NotNullable()
             .WithColumn("Type").AsString(50).NotNullable()
             .WithColumn("UserId").AsGuid().NotNullable()
-                .ForeignKey("FK_VerificationCodes_Users_UserId","User", "Id");
+                .ForeignKey("FK_VerificationCodes_Users_UserId","Users", "Id");
     }
 }
