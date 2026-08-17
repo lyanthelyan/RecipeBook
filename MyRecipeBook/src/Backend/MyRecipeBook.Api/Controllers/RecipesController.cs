@@ -29,8 +29,8 @@ public class RecipesController : ControllerBase
     }
 
     [HttpGet("{recipeId}")]
-    [ProducesResponseType(typeof(ResponseRegisteredRecipeJson), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ResponseRecipeJson), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(
         [FromRoute] Guid recipeId, 
         [FromServices] IGetRecipeByIdUseCase useCase)
