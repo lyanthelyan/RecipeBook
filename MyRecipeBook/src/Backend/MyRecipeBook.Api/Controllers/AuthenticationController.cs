@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyRecipeBook.Application.UseCases.Login.WithEmailAndPassword;
 using MyRecipeBook.Application.UseCases.PasswordRecovery.RequestCode;
+using MyRecipeBook.Application.UseCases.PasswordRecovery.ResetPassword;
 using MyRecipeBook.Communication.Requests;
 using MyRecipeBook.Communication.Responses;
-using MyRecipeBook.Domain.Repositories.VerificationCode;
 
 namespace MyRecipeBook.Api.Controllers;
 
@@ -11,7 +11,7 @@ namespace MyRecipeBook.Api.Controllers;
 [ApiController]
 public class AuthenticationController : ControllerBase
 {
-    [HttpPost]
+    [HttpPost("login")]
     [ProducesResponseType(typeof(ResponseRegisteredUserJson), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Login(
@@ -32,4 +32,16 @@ public class AuthenticationController : ControllerBase
         await useCase.Execute(request);
         return Accepted();
     }
+
+    [HttpPost("password-recovery/reset")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ResetPassword(
+        [FromServices] IResetPasswordUseCase useCase,
+        [FromBody] RequestResetPasswordJson request)
+    {
+        await useCase.Execute(request);
+        return NoContent();
+    }
+
 }

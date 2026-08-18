@@ -284,5 +284,14 @@ namespace MyRecipeBook.Exception {
                 return ResourceManager.GetString("VALIDATION_RESOURCE_ACCESS_DENIED", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Oops! Code is invalid or expired..
+        /// </summary>
+        public static string VERIFICATION_CODE_INVALID {
+            get {
+                return ResourceManager.GetString("VERIFICATION_CODE_INVALID", resourceCulture);
+            }
+        }
     }
 }

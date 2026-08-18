@@ -192,4 +192,7 @@
   <data name="VALIDATION_RECIPE_NOT_FOUND" xml:space="preserve">
     <value>Ops! Não conseguimos encontrar esta receita.</value>
   </data>
+  <data name="VERIFICATION_CODE_INVALID" xml:space="preserve">
+    <value>Ops! O código está invalido ou expirado.</value>
+  </data>
 </root>
