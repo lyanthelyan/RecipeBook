@@ -31,6 +31,7 @@ public static class DependencyInjectionExtension
             {
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             });            
+            
             services.AddFluentMigratorCore().ConfigureRunner(config =>
             {
                 config

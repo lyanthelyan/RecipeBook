@@ -193,6 +193,6 @@
     <value>¡Ups! No pudimos encontrar esta receta.</value>
   </data>
   <data name="VERIFICATION_CODE_INVALID" xml:space="preserve">
-    <value>¡Ups! El código no es válido o expirado.</value>
+    <value>Código inválido o expirado.</value>
   </data>
 </root>

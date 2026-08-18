@@ -286,7 +286,7 @@ namespace MyRecipeBook.Exception {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Oops! Code is invalid or expired..
+        ///   Looks up a localized string similar to Invalid or expired code..
         /// </summary>
         public static string VERIFICATION_CODE_INVALID {
             get {

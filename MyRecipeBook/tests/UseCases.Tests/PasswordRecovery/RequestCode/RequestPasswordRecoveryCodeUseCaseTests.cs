@@ -5,7 +5,7 @@ using MyRecipeBook.Application.UseCases.PasswordRecovery.RequestCode;
 using MyRecipeBook.Communication.Requests;
 using Shouldly;
 
-namespace UseCases.Tests.PasswordRecovery;
+namespace UseCases.Tests.PasswordRecovery.RequestCode;
 
 public class RequestPasswordRecoveryCodeUseCaseTests
 {
