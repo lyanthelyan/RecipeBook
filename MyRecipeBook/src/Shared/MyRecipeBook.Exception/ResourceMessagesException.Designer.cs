@@ -133,6 +133,15 @@ namespace MyRecipeBook.Exception {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only PNG OR JPG/JPEG images are accepted..
+        /// </summary>
+        public static string VALIDATION_ONLY_IMAGES_ACCEPTED {
+            get {
+                return ResourceManager.GetString("VALIDATION_ONLY_IMAGES_ACCEPTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Oops! Password must be at least 6 characters long..
         /// </summary>
         public static string VALIDATION_PASSWORD_MIN_LENGTH {
