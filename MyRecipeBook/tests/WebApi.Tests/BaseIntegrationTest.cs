@@ -43,6 +43,15 @@ public abstract class BaseIntegrationTest : IClassFixture<MyRecipeBookApplicatio
         return await _httpClient.PutAsJsonAsync(requestUri, request);
     }
 
+    protected async Task<HttpResponseMessage> PutFormData(string requestUri, Stream file, string accessToken, string fileFieldName = "file", string culture = "en-US")
+    {
+        ChangeRequestCulture(culture);
+        AuthorizeRequest(accessToken);
+        var content = new MultipartFormDataContent();
+        content.Add(new StreamContent(file), fileFieldName, fileName: fileFieldName);
+        return await _httpClient.PutAsync(requestUri, content);
+    }
+
     protected async Task<HttpResponseMessage> Delete(string requestUri, string accessToken, string culture = "en-US")
     {
         ChangeRequestCulture(culture);
