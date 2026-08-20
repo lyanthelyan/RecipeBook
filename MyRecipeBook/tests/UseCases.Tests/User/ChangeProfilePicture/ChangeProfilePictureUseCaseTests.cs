@@ -5,6 +5,7 @@ using MyRecipeBook.Application.UseCases.User.ChangeProfilePicture;
 using MyRecipeBook.Exception;
 using MyRecipeBook.Exception.ExceptionsBase;
 using Shouldly;
+using System.Net;
 
 namespace UseCases.Tests.User.ChangeProfilePicture;
 
@@ -30,6 +31,8 @@ public class ChangeProfilePictureUseCaseTests
         var useCase = CreateUseCase();
         var exception = await useCase.Execute(FileBuilder.GetTxt()).ShouldThrowAsync<ErrorOnValidationException>();
 
+        exception.GetStatusCode().ShouldBe(HttpStatusCode.BadRequest);
+
         exception.GetErrorMessages().ShouldSatisfyAllConditions(errorMessages =>
         {
             errorMessages.Count.ShouldBe(1);
@@ -42,6 +45,8 @@ public class ChangeProfilePictureUseCaseTests
     {
         var useCase = CreateUseCase();
         var exception = await useCase.Execute(FileBuilder.GetBmp()).ShouldThrowAsync<ErrorOnValidationException>();
+
+        exception.GetStatusCode().ShouldBe(HttpStatusCode.BadRequest);
 
         exception.GetErrorMessages().ShouldSatisfyAllConditions(errorMessages =>
         {
