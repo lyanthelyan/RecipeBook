@@ -68,7 +68,7 @@ internal sealed class RecipeRepository : IRecipeWriteOnlyRepository, IRecipeRead
             .Where(recipe => recipe.Active && recipe.UserId == userId)
             .OrderByDescending(recipe => recipe.CreatedOn)
             .Take(6)
-            .Select(recipe => new RecipeSummaryDto(recipe.Id, recipe.Title))
+            .Select(recipe => new RecipeSummaryDto(recipe.Id, recipe.Title, recipe.HasImage))
             .ToListAsync();
     }
 
@@ -91,7 +91,7 @@ internal sealed class RecipeRepository : IRecipeWriteOnlyRepository, IRecipeRead
             recipe.DishTypes.Any(dt => filter.DishTypes.Contains(dt.Type)));
         }
 
-        return await query.Select(recipe => new RecipeSummaryDto(recipe.Id, recipe.Title)).ToListAsync();
+        return await query.Select(recipe => new RecipeSummaryDto(recipe.Id, recipe.Title, recipe.HasImage)).ToListAsync();
     }
 }
  

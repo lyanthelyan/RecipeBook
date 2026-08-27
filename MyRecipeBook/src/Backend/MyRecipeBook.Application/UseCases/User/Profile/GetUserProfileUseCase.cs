@@ -1,5 +1,4 @@
-﻿using Mapster;
-using MyRecipeBook.Communication.Responses;
+﻿using MyRecipeBook.Communication.Responses;
 using MyRecipeBook.Domain.Identity;
 using MyRecipeBook.Domain.Storage;
 
@@ -20,8 +19,12 @@ public class GetUserProfileUseCase : IGetUserProfileUseCase
     public async Task<ResponseUserProfileJson> Execute()
     {
         var loggedUser = await _loggedUser.Get();
-        var response = loggedUser.Adapt<ResponseUserProfileJson>();
-        response.ImageUrl = _storageService.GetProfilePictureUrl(loggedUser);
-        return response;
+
+        return new ResponseUserProfileJson
+        {
+            Name = loggedUser.Name,
+            Email = loggedUser.Email,
+            ImageUrl = loggedUser.HasImage ? _storageService.GetProfilePictureUrl(loggedUser) : string.Empty
+        };
     }
 }

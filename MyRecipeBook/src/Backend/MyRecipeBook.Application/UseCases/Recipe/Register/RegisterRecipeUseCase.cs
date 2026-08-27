@@ -6,6 +6,7 @@ using MyRecipeBook.Domain.Extensions;
 using MyRecipeBook.Domain.Identity;
 using MyRecipeBook.Domain.Repositories;
 using MyRecipeBook.Domain.Repositories.Recipe;
+using MyRecipeBook.Domain.Storage;
 using MyRecipeBook.Exception;
 using MyRecipeBook.Exception.ExceptionsBase;
 
@@ -16,15 +17,18 @@ public class RegisterRecipeUseCase : IRegisterRecipeUseCase
     private readonly IRecipeWriteOnlyRepository _recipeRepository;
     private readonly ILoggedUser _loggedUser;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IStorageService _storageService;
 
     public RegisterRecipeUseCase(
         IRecipeWriteOnlyRepository recipeRepository,
         ILoggedUser loggedUser, 
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IStorageService storageService)
     {
         _recipeRepository = recipeRepository;
         _loggedUser = loggedUser;
         _unitOfWork = unitOfWork;
+        _storageService = storageService;
     }
     public async Task<ResponseRegisteredRecipeJson> Execute(RequestRecipeJson request, Stream? recipeIllustration)
     {
@@ -37,7 +41,10 @@ public class RegisterRecipeUseCase : IRegisterRecipeUseCase
             var contentType = recipeIllustration.DetectImageContentType();
             if (contentType.IsEmpty())
                 throw new ErrorOnValidationException([ResourceMessagesException.VALIDATION_ONLY_IMAGES_ACCEPTED]);
+            
+            recipe.HasImage = true;
 
+            await _storageService.UploadIllustration(recipe, recipeIllustration, contentType);
         }
 
         await _recipeRepository.Add(recipe);
@@ -46,7 +53,9 @@ public class RegisterRecipeUseCase : IRegisterRecipeUseCase
         return new ResponseRegisteredRecipeJson
         {
             Id = recipe.Id,
-            Title = recipe.Title
+            Title = recipe.Title,
+            ImageUrl = recipe.HasImage ? _storageService
+                .GetRecipeIllustrationUrl(userId: recipe.UserId, recipeId: recipe.Id) : string.Empty
         };
     }
 

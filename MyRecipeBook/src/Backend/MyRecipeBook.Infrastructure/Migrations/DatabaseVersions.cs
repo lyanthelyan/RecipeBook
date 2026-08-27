@@ -6,4 +6,5 @@ internal abstract class DatabaseVersions
     internal const int TABLE_RECIPES = 2;
     internal const int ADD_RECIPE_CREATED_ON = 3;
     internal const int TABLE_VERIFICATION_CODES = 4;
+    internal const int HAS_IMAGE_COLUMNS = 5;
 }

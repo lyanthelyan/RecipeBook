@@ -10,4 +10,5 @@ public class ResponseRecipeJson
     public IList<ResponseInstructionJson> Instructions { get; set; } = [];
     public IList<DishType> DishTypes { get; set; } = [];
     public CookTime CookTime { get; set; }
+    public string ImageUrl { get; set; } = string.Empty;
 }
