@@ -198,4 +198,10 @@
   <data name="VALIDATION_ONLY_IMAGES_ACCEPTED" xml:space="preserve">
     <value>Solo se aceptan imágenes PNG o JPG/JPEG.</value>
   </data>
+  <data name="VALIDATION_AT_LEAST_ONE_INSTRUCTION_REQUIRED" xml:space="preserve">
+    <value>Se requiere al menos una instrucción.</value>
+  </data>
+  <data name="VALIDATION_AT_LEAST_ONE_INGREDIENT_REQUIRED" xml:space="preserve">
+    <value>Se requiere al menos un ingrediente.</value>
+  </data>
 </root>

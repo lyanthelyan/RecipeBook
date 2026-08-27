@@ -79,6 +79,24 @@ namespace MyRecipeBook.Exception {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to At least one ingredient is required.
+        /// </summary>
+        public static string VALIDATION_AT_LEAST_ONE_INGREDIENT_REQUIRED {
+            get {
+                return ResourceManager.GetString("VALIDATION_AT_LEAST_ONE_INGREDIENT_REQUIRED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to At least one instruction is required..
+        /// </summary>
+        public static string VALIDATION_AT_LEAST_ONE_INSTRUCTION_REQUIRED {
+            get {
+                return ResourceManager.GetString("VALIDATION_AT_LEAST_ONE_INSTRUCTION_REQUIRED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The current password is incorrect..
         /// </summary>
         public static string VALIDATION_CURRENT_PASSWORD {

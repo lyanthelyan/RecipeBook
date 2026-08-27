@@ -22,7 +22,7 @@ public class RegisterRecipeAuthenticationTests : BaseIntegrationTest
     {
         var request = RequestRecipeJsonBuilder.Build();
 
-        var response = await Post(
+        var response = await PostFormData(
             REQUEST_URI,
             request,
             accessToken: "invalid-token");
@@ -35,7 +35,7 @@ public class RegisterRecipeAuthenticationTests : BaseIntegrationTest
     {
         var request = RequestRecipeJsonBuilder.Build();
 
-        var response = await Post(
+        var response = await PostFormData(
             REQUEST_URI,
             request,
             accessToken: string.Empty);
@@ -48,7 +48,7 @@ public class RegisterRecipeAuthenticationTests : BaseIntegrationTest
     {
         var request = RequestRecipeJsonBuilder.Build();
 
-        var response = await Post(
+        var response = await PostFormData(
             REQUEST_URI,
             request,
             accessToken: _tokenUserNotFoundInDatabase);
