@@ -2,6 +2,7 @@
 using CommonTestUtilities.Repositories;
 using CommonTestUtilities.Requests;
 using CommonTestUtilities.Security;
+using CommonTestUtilities.Storage;
 using MyRecipeBook.Application.UseCases.Login.WithEmailAndPassword;
 using MyRecipeBook.Domain.Extensions;
 using MyRecipeBook.Exception;
@@ -12,24 +13,27 @@ namespace UseCases.Tests.User.Login.WithEmailAndPassword;
 
 public class LoginWithEmailAndPasswordUseCaseTests
 {
-    [Fact]
-    public async Task Sucess()
+    [Theory]
+    [InlineData(true, IStorageServiceBuilder.FakeUrl)]
+    [InlineData(false, "")]
+    public async sTask Sucess(bool hasImage, string expectedUrl)
     {
-        var request = RequestLoginJsonBuilder.Build();
         var (user, _) = UserBuilder.Build();
+        user.HasImage = hasImage;
+
+        var request = RequestLoginJsonBuilder.Build(); 
         request.Email = user.Email;
 
         var useCase = CreateUseCase(request.Password, user);
 
         var result = await useCase.Execute(request);
-
+        
         result.ShouldNotBeNull();
         result.Tokens.ShouldNotBeNull();
         result.Name.ShouldBe(user.Name);
         result.Tokens.AccessToken.ShouldNotBeNullOrEmpty();
         result.Tokens.RefreshToken.ShouldBeNullOrEmpty();
-        
-        
+        result.ImageUrl.ShouldBe(expectedUrl);
     }
     
     [Fact]
@@ -67,13 +71,16 @@ public class LoginWithEmailAndPasswordUseCaseTests
         var acessTokenGeneratorBuilder = IAcessTokenGeneratorBuilder.Build();
         var passwordHasherBuilder = new IPasswordHasherBuilder();
         var userReadOnlyRepositoryBuilder = new IUserReadOnlyRepositoryBuilder();
+        var storageServiceBuilder = IStorageServiceBuilder.Build();
         if (user is not null)
             userReadOnlyRepositoryBuilder.GetByEmail(user);
-        
-
         if (password.IsNotEmpty())
             passwordHasherBuilder.VerifyPassword(password);
 
-        return new LoginWithEmailAndPasswordUseCase(userReadOnlyRepositoryBuilder.Build(), passwordHasherBuilder.Build(), acessTokenGeneratorBuilder);
+        return new LoginWithEmailAndPasswordUseCase(
+            userReadOnlyRepositoryBuilder.Build(), 
+            passwordHasherBuilder.Build(), 
+            acessTokenGeneratorBuilder, 
+            storageServiceBuilder);
     }
 }

@@ -1,6 +1,8 @@
 ﻿using CommonTestUtilities.Entities;
 using CommonTestUtilities.Files;
 using CommonTestUtilities.Identity;
+using CommonTestUtilities.Repositories;
+using CommonTestUtilities.Storage;
 using MyRecipeBook.Application.UseCases.User.ChangeProfilePicture;
 using MyRecipeBook.Exception;
 using MyRecipeBook.Exception.ExceptionsBase;
@@ -62,7 +64,9 @@ public class ChangeProfilePictureUseCaseTests
     {
         var (user, _) = UserBuilder.Build();
         var loggedUser = ILoggedUserBuilder.Build(user);
+        var storageServiceBuilder = IStorageServiceBuilder.Build();
+        var userUpdateRepositoryBuilder = IUserUpdateOnlyRepositoryBuilder.Build();
 
-        return new ChangeProfilePictureUseCase(loggedUser);
+        return new ChangeProfilePictureUseCase(loggedUser, storageServiceBuilder, userUpdateRepositoryBuilder);
     }
 }

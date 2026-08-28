@@ -3,6 +3,7 @@ using CommonTestUtilities.Files;
 using CommonTestUtilities.Identity;
 using CommonTestUtilities.Repositories;
 using CommonTestUtilities.Requests;
+using CommonTestUtilities.Storage;
 using MyRecipeBook.Application.Mappings;
 using MyRecipeBook.Application.UseCases.Recipe.Register;
 using MyRecipeBook.Exception;
@@ -55,15 +56,6 @@ public class RegisterRecipeUseCaseTests
         });
     }
 
-    private static RegisterRecipeUseCase CreateUseCase(MyRecipeBook.Domain.Entities.User user)
-    {
-        var recipeRepository = IRecipeWriteOnlyRepositoryBuilder.Build();
-        var loggedUser = ILoggedUserBuilder.Build(user);
-        var unitOfWork = IUnitOfWorkBuilder.Build();
-
-        return new RegisterRecipeUseCase(recipeRepository, loggedUser, unitOfWork);
-    }
-
     [Fact]
     public async Task Success_WithoutImage()
     {
@@ -84,6 +76,7 @@ public class RegisterRecipeUseCaseTests
         result.ShouldNotBeNull();
         result.Id.ShouldNotBe(Guid.Empty);
         result.Title.ShouldBe(request.Title);
+        result.ImageUrl.ShouldBeEmpty();
     }
 
     [Fact]
@@ -105,6 +98,7 @@ public class RegisterRecipeUseCaseTests
         result.ShouldNotBeNull();
         result.Id.ShouldNotBe(Guid.Empty);
         result.Title.ShouldBe(request.Title);
+        result.ImageUrl.ShouldBe(IStorageServiceBuilder.FakeUrl);
     }
 
     [Fact]
@@ -126,6 +120,7 @@ public class RegisterRecipeUseCaseTests
         result.ShouldNotBeNull();
         result.Id.ShouldNotBe(Guid.Empty);
         result.Title.ShouldBe(request.Title);
+        result.ImageUrl.ShouldBe(IStorageServiceBuilder.FakeUrl);
     }
 
     [Fact]
@@ -172,6 +167,15 @@ public class RegisterRecipeUseCaseTests
             errorMessages.Count.ShouldBe(1);
             errorMessages.ShouldContain(ResourceMessagesException.VALIDATION_ONLY_IMAGES_ACCEPTED);
         });
+    }
+    private static RegisterRecipeUseCase CreateUseCase(MyRecipeBook.Domain.Entities.User user)
+    {
+        var recipeRepository = IRecipeWriteOnlyRepositoryBuilder.Build();
+        var loggedUser = ILoggedUserBuilder.Build(user);
+        var unitOfWork = IUnitOfWorkBuilder.Build();
+        var storageServiceBuilder = IStorageServiceBuilder.Build();
+
+        return new RegisterRecipeUseCase(recipeRepository, loggedUser, unitOfWork, storageServiceBuilder);
     }
 
 }

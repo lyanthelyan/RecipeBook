@@ -1,6 +1,7 @@
 using CommonTestUtilities.Entities;
 using CommonTestUtilities.Identity;
 using CommonTestUtilities.Repositories;
+using CommonTestUtilities.Storage;
 using MyRecipeBook.Application.Mappings;
 using MyRecipeBook.Application.UseCases.Recipe.Filter;
 using MyRecipeBook.Communication.Requests;
@@ -11,13 +12,16 @@ namespace UseCases.Tests.Recipe.Filter;
 
 public class FilterRecipesUseCaseTests
 {
-    [Fact]
-    public async Task Success_WhenRequestIsNull()
+    [Theory]
+    [InlineData(true, IStorageServiceBuilder.FakeUrl)]
+    [InlineData(false, "")]
+    public async Task Sucess(bool hasImage, string expectedUrl)
     {
         MapsterConfiguration.Configure();
 
         var (user, _) = UserBuilder.Build();
         var recipe = RecipeBuilder.Build(user);
+        recipe.HasImage = hasImage;
 
         var repositoryBuilder = new IRecipeReadOnlyRepositoryBuilder()
             .FilterRecipes([recipe]);
@@ -33,18 +37,23 @@ public class FilterRecipesUseCaseTests
                 responseRecipe.Id == recipe.Id &&
                 responseRecipe.Title.Equals(recipe.Title));
         });
+        result.Recipes.ShouldAllBe(recipe => recipe.ImageUrl.Equals(expectedUrl));
 
         repositoryBuilder.VerifyFilterRecipes(user.Id, new RecipeFilterDto());
     }
 
-    [Fact]
-    public async Task Success_WithDefaultRequest()
+    [Theory]
+    [InlineData(true, IStorageServiceBuilder.FakeUrl)]
+    [InlineData(false, "")]
+    public async Task Success_WithDefaultRequest(bool hasImage, string expectedUrl)
     {
         MapsterConfiguration.Configure();
 
         var (user, _) = UserBuilder.Build();
         var recipe = RecipeBuilder.Build(user);
+        recipe.HasImage = hasImage;
         var request = new RequestFilterRecipesJson();
+        
 
         var repositoryBuilder = new IRecipeReadOnlyRepositoryBuilder()
             .FilterRecipes([recipe]);
@@ -60,14 +69,14 @@ public class FilterRecipesUseCaseTests
                 responseRecipe.Id == recipe.Id &&
                 responseRecipe.Title.Equals(recipe.Title));
         });
-
+        result.Recipes.ShouldAllBe(recipe => recipe.ImageUrl.Equals(expectedUrl));
         repositoryBuilder.VerifyFilterRecipes(user.Id, new RecipeFilterDto());
     }
 
     private static FilterRecipesUseCase CreateUseCase(MyRecipeBook.Domain.Entities.User user, IRecipeReadOnlyRepositoryBuilder repositoryBuilder)
     {
         var loggedUser = ILoggedUserBuilder.Build(user);
-
-        return new FilterRecipesUseCase(loggedUser, repositoryBuilder.Build());
+        var storageServiceBuilder = IStorageServiceBuilder.Build();
+        return new FilterRecipesUseCase(loggedUser, repositoryBuilder.Build(), storageServiceBuilder);
     }
 }

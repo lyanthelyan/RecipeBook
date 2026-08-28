@@ -24,14 +24,14 @@ public class IRecipeReadOnlyRepositoryBuilder
     public IRecipeReadOnlyRepositoryBuilder GetRecentRecipes(Guid userId, IList<Recipe> recipes)
     {
         _mock.Setup(repository => repository.GetRecentRecipes(userId))
-            .ReturnsAsync(recipes.Select(recipe => new RecipeSummaryDto(recipe.Id, recipe.Title)).ToList());
+            .ReturnsAsync(recipes.Select(recipe => new RecipeSummaryDto(recipe.Id, recipe.Title, recipe.HasImage)).ToList());
         return this;
     }
 
     public IRecipeReadOnlyRepositoryBuilder FilterRecipes(IList<Recipe> recipes)
     {
         _mock.Setup(repository => repository.FilterRecipes(It.IsAny<Guid>(), It.IsAny<RecipeFilterDto>()))
-            .ReturnsAsync(recipes.Select(recipe => new RecipeSummaryDto(recipe.Id, recipe.Title)).ToList());
+            .ReturnsAsync(recipes.Select(recipe => new RecipeSummaryDto(recipe.Id, recipe.Title, recipe.HasImage)).ToList());
         return this;
     }
 
