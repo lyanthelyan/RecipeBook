@@ -3,6 +3,7 @@ using MyRecipeBook.Application.Mappings;
 using MyRecipeBook.Application.UseCases.Login.WithEmailAndPassword;
 using MyRecipeBook.Application.UseCases.PasswordRecovery.RequestCode;
 using MyRecipeBook.Application.UseCases.PasswordRecovery.ResetPassword;
+using MyRecipeBook.Application.UseCases.Recipe.ChangeIllustration;
 using MyRecipeBook.Application.UseCases.Recipe.Delete;
 using MyRecipeBook.Application.UseCases.Recipe.Filter;
 using MyRecipeBook.Application.UseCases.Recipe.GetById;
@@ -44,6 +45,7 @@ public static class DependencyInjectionExtension
             //services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IResetPasswordUseCase, ResetPasswordUseCase>();
             services.AddScoped<IChangeProfilePictureUseCase, ChangeProfilePictureUseCase>();
+            services.AddScoped<IChangeIllustrationUseCase, ChangeIllustrationUseCase>();
 
         }
     }

@@ -23,7 +23,7 @@ internal sealed class AzureStorageService : IStorageService
     
     public async Task UploadIllustration(Recipe recipe, Stream file, string contentType)
     {
-        await Upload(recipe.UserId, file, ProfilePictureFileName, contentType);
+        await Upload(recipe.UserId, file, recipe.Id.ToString(), contentType);
     }
 
     public string GetProfilePictureUrl(User user)
@@ -64,5 +64,21 @@ internal sealed class AzureStorageService : IStorageService
                 BlobSasPermissions.Read, 
                 DateTime.UtcNow.AddMinutes(expirationInMinutes))
             .ToString();
+    }
+
+    public async Task DeleteUserFiles(User user)
+    {
+        var containterClient = _blobServiceClient.GetBlobContainerClient(user.Id.ToString());
+
+        await containterClient.DeleteIfExistsAsync();
+    }
+
+    public async Task DeleteRecipeIllustration(Guid userId, Guid recipeId)
+    {
+        var blob = _blobServiceClient
+            .GetBlobContainerClient(userId.ToString())
+            .GetBlobClient(recipeId.ToString());
+
+        await blob.DeleteIfExistsAsync();
     }
 }

@@ -36,7 +36,6 @@ public static class DependencyInjectionExtension
                 var connectionString = configuration.GetConnectionString("BlobStorage")!;
                 return new AzureStorageService(new BlobServiceClient(connectionString));
             });
-
             services.AddFluentMigratorCore().ConfigureRunner(config =>
             {
                 config
