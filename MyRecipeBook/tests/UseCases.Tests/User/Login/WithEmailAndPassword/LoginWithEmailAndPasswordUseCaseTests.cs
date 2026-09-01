@@ -16,7 +16,7 @@ public class LoginWithEmailAndPasswordUseCaseTests
     [Theory]
     [InlineData(true, IStorageServiceBuilder.FakeUrl)]
     [InlineData(false, "")]
-    public async sTask Sucess(bool hasImage, string expectedUrl)
+    public async Task Sucess(bool hasImage, string expectedUrl)
     {
         var (user, _) = UserBuilder.Build();
         user.HasImage = hasImage;

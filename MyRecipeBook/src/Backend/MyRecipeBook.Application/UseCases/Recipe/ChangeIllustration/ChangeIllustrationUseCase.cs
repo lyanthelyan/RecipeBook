@@ -36,7 +36,7 @@ public class ChangeIllustrationUseCase : IChangeIllustrationUseCase
 
         var recipe = await _repository.GetById(recipeId, userId);
         if (recipe is null)
-            throw new ErrorOnValidationException([ResourceMessagesException.VALIDATION_RECIPE_NOT_FOUND]);
+            throw new NotFoundException(ResourceMessagesException.VALIDATION_RECIPE_NOT_FOUND);
 
         await _storageService.UploadIllustration(recipe, recipeIllustration, contentType);
 
