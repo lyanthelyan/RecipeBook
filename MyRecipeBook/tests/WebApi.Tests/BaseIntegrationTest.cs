@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Azure.Storage.Blobs;
+using Microsoft.Extensions.DependencyInjection;
 using MyRecipeBook.Domain.Extensions;
 using MyRecipeBook.Infrastructure.DataAcess;
 using System.Net.Http.Headers;
@@ -13,6 +14,7 @@ public abstract class BaseIntegrationTest : IAsyncLifetime, IDisposable
     private readonly IServiceScope _scope;
     private readonly HttpClient _httpClient;
     internal readonly MyRecipeBookDbContext DbContext;
+    internal readonly BlobServiceClient BlobServiceClient;
 
     public BaseIntegrationTest(MyRecipeBookApplicationFactory factory)
     {
@@ -22,6 +24,7 @@ public abstract class BaseIntegrationTest : IAsyncLifetime, IDisposable
         _scope = factory.Services.CreateScope();
 
         DbContext = _scope.ServiceProvider.GetRequiredService<MyRecipeBookDbContext>();
+        BlobServiceClient = _scope.ServiceProvider.GetRequiredService<BlobServiceClient>();
     }
 
     public async Task InitializeAsync()
@@ -66,7 +69,7 @@ public abstract class BaseIntegrationTest : IAsyncLifetime, IDisposable
         return await _httpClient.PutAsync(requestUri, content);
     }
 
-    protected async Task<HttpResponseMessage> PostFormData(string requestUri,object request, Stream? file = null, string accessToken = "", string fileFieldName = "file", string culture = "en-US")
+    protected async Task<HttpResponseMessage>  PostFormData(string requestUri,object request, Stream? file = null, string accessToken = "", string fileFieldName = "file", string culture = "en-US")
     {
         ChangeRequestCulture(culture);
         AuthorizeRequest(accessToken);

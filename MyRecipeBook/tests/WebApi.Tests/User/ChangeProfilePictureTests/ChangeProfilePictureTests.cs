@@ -1,7 +1,8 @@
-﻿using Shouldly;
-using CommonTestUtilities.Files;
+﻿using CommonTestUtilities.Files;
+using MyRecipeBook.Domain.Entities;
 using MyRecipeBook.Domain.Extensions;
 using MyRecipeBook.Exception;
+using Shouldly;
 using System.Globalization;
 using System.Net;
 using System.Text.Json;
@@ -31,6 +32,11 @@ public class ChangeProfilePictureTests : BaseIntegrationTest
             FILE_FIELD_NAME);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        
+        var existImageInStorage = await BlobServiceClient.GetBlobContainerClient(_user1.GetId().ToString())
+            .GetBlobClient("profile-picture")
+            .ExistsAsync();
+        existImageInStorage.Value.ShouldBeTrue();
     }
 
     [Theory]

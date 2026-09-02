@@ -31,11 +31,12 @@ public static class DependencyInjectionExtension
             services.AddTokensHandlers(configuration);
             services.AddScoped<IPasswordHasher, Argon2PasswordHasher>();               
             services.AddScoped<ILoggedUser, LoggedUser>();
-            services.AddScoped<IStorageService>(config =>
+            services.AddScoped(_ =>
             {
                 var connectionString = configuration.GetConnectionString("BlobStorage")!;
-                return new AzureStorageService(new BlobServiceClient(connectionString));
+                return new BlobServiceClient(connectionString);
             });
+            services.AddScoped<IStorageService, AzureStorageService>();
             services.AddFluentMigratorCore().ConfigureRunner(config =>
             {
                 config

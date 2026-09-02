@@ -41,6 +41,8 @@ public class RegisterRecipeTests : BaseIntegrationTest
         var recipeId = responseData.RootElement.GetProperty("id").GetGuid();
         recipeId.ShouldNotBe(Guid.Empty);
         responseData.RootElement.GetProperty("title").GetString().ShouldBe(request.Title);
+        responseData.RootElement.GetProperty("imageUrl").GetString().ShouldBeNullOrEmpty();
+
 
         var recipe = await DbContext.Recipes
             .Include(recipe => recipe.Ingredients)
@@ -60,11 +62,18 @@ public class RegisterRecipeTests : BaseIntegrationTest
         });
 
         request.Ingredients.ShouldAllBe(ingredient => recipe.Ingredients.Any(registeredIngredient => registeredIngredient.Item.Equals(ingredient)));
+        
         request.Instructions.ShouldAllBe(instruction => recipe.Instructions.Any(registeredInstruction =>
             registeredInstruction.Order == instruction.Order &&
             registeredInstruction.Description.Equals(instruction.Description)));
+        
         request.DishTypes.ShouldAllBe(dishType => recipe.DishTypes.Any(registeredDishType =>
             registeredDishType.Type == (MyRecipeBook.Domain.Enums.DishType)dishType));
+
+        var existImageInStorage = await BlobServiceClient.GetBlobContainerClient(_user1.GetId().ToString())
+            .GetBlobClient(recipeId.ToString())
+            .ExistsAsync();
+        existImageInStorage.Value.ShouldBeFalse();
     }
     [Fact]
     public async Task Success_WithImage()
@@ -84,6 +93,7 @@ public class RegisterRecipeTests : BaseIntegrationTest
         var recipeId = responseData.RootElement.GetProperty("id").GetGuid();
         recipeId.ShouldNotBe(Guid.Empty);
         responseData.RootElement.GetProperty("title").GetString().ShouldBe(request.Title);
+        responseData.RootElement.GetProperty("imageUrl").GetString().ShouldNotBeNullOrEmpty();
 
         var recipe = await DbContext.Recipes
             .Include(recipe => recipe.Ingredients)
@@ -100,14 +110,21 @@ public class RegisterRecipeTests : BaseIntegrationTest
             registeredRecipe.Ingredients.Count.ShouldBe(request.Ingredients.Count);
             registeredRecipe.Instructions.Count.ShouldBe(request.Instructions.Count);
             registeredRecipe.DishTypes.Count.ShouldBe(request.DishTypes.Count);
-        });
 
+        });
         request.Ingredients.ShouldAllBe(ingredient => recipe.Ingredients.Any(registeredIngredient => registeredIngredient.Item.Equals(ingredient)));
+        
         request.Instructions.ShouldAllBe(instruction => recipe.Instructions.Any(registeredInstruction =>
             registeredInstruction.Order == instruction.Order &&
             registeredInstruction.Description.Equals(instruction.Description)));
+        
         request.DishTypes.ShouldAllBe(dishType => recipe.DishTypes.Any(registeredDishType =>
             registeredDishType.Type == (MyRecipeBook.Domain.Enums.DishType)dishType));
+
+        var existImageInStorage = await BlobServiceClient.GetBlobContainerClient(_user1.GetId().ToString())
+            .GetBlobClient(recipeId.ToString())
+            .ExistsAsync();
+        existImageInStorage.Value.ShouldBeTrue();
     }
     [Theory]
     [ClassData(typeof(CultureInlineData))]

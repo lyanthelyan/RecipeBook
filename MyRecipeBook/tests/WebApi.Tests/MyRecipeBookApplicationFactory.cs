@@ -30,7 +30,7 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
     {
         _msSqlContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU10-ubuntu-22.04")
             .Build();
-        _azuriteContainer = new AzuriteBuilder("mcr.microsoft.com/azure-storage/azurite:3.23.0")
+        _azuriteContainer = new AzuriteBuilder("mcr.microsoft.com/azure-storage/azurite:latest")
         .Build();
     }
 
