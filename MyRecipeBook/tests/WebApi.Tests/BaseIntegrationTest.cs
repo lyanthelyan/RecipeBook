@@ -6,20 +6,32 @@ using System.Net.Http.Json;
 
 namespace WebApi.Tests;
 
-public abstract class BaseIntegrationTest : IClassFixture<MyRecipeBookApplicationFactory>, IDisposable
+[Collection(nameof(IntegrationTestCollection))]
+public abstract class BaseIntegrationTest : IAsyncLifetime, IDisposable
 {
+    private readonly MyRecipeBookApplicationFactory _factory;
     private readonly IServiceScope _scope;
-
     private readonly HttpClient _httpClient;
     internal readonly MyRecipeBookDbContext DbContext;
 
     public BaseIntegrationTest(MyRecipeBookApplicationFactory factory)
     {
+        _factory = factory;
         _httpClient = factory.CreateClient();
 
         _scope = factory.Services.CreateScope();
 
         DbContext = _scope.ServiceProvider.GetRequiredService<MyRecipeBookDbContext>();
+    }
+
+    public async Task InitializeAsync()
+    {
+        await _factory.ResetDatabase();
+    }
+
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
     }
 
     protected async Task<HttpResponseMessage> Post(string requestUri, object request, string accessToken = "",string culture = "en-US")
