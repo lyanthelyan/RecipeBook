@@ -1,9 +1,11 @@
 
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using MyRecipeBook.Api.Configuration;
 using MyRecipeBook.Api.Converters;
 using MyRecipeBook.Api.Filters;
 using MyRecipeBook.Api.Token;
@@ -61,6 +63,9 @@ builder.Services.AddOpenApi();
 builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddApplication();
+
+builder.Services.AddOptions<ExternalLoginReturnUrlOptions>()
+    .Bind(builder.Configuration.GetSection(ExternalLoginReturnUrlOptions.SectionName));
 
 // Provides access to the token from the current HTTP request.
 builder.Services.AddScoped<IAccessTokenProvider, HttpContextTokenProvider>();
@@ -173,6 +178,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 await context.Response.WriteAsJsonAsync(response);
             }
         };
+    })
+    .AddGoogleOpenIdConnect(googleOptions =>
+    {
+        googleOptions.ClientId = builder.Configuration
+            .GetValue<string>("Settings:Google:ClientId");
+        googleOptions.ClientSecret = builder.Configuration
+            .GetValue<string>("Settings:Google:ClientSecret");
+        googleOptions.CallbackPath = "/signin-google";
+        googleOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    })
+    .AddCookie(options =>
+    {
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
     });
 
 var app = builder.Build();

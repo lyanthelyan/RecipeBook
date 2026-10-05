@@ -13,7 +13,6 @@ public class GetUserProfileUseCase : IGetUserProfileUseCase
     {
         _loggedUser = loggedUser;
         _storageService = storageService;
-
     }
 
     public async Task<ResponseUserProfileJson> Execute()

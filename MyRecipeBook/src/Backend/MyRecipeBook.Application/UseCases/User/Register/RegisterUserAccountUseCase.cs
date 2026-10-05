@@ -60,6 +60,7 @@ public class RegisterUserAccountUseCase : IRegisterUserAccountUseCase
         var result = validator.Validate(request);
 
         var emailExist = await _userReadOnlyRepository.ExistActiveUserWithEmail(request.Email);
+        
         if (emailExist)
         {
             result.Errors.Add(new ValidationFailure(string.Empty,ResourceMessagesException.VALIDATION_EMAIL_ALREADY_EXISTS));
@@ -67,7 +68,6 @@ public class RegisterUserAccountUseCase : IRegisterUserAccountUseCase
 
         if (result.IsValid == false)
         {
-
             var errorMessages = result.Errors
                 .Select(error => error.ErrorMessage)
                 .ToList();

@@ -61,6 +61,15 @@ namespace MyRecipeBook.Exception {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to generate the recipe..
+        /// </summary>
+        public static string UNABLE_TO_GENERATE_RECIPE {
+            get {
+                return ResourceManager.GetString("UNABLE_TO_GENERATE_RECIPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unknown error..
         /// </summary>
         public static string UNKNOWN_ERROR {

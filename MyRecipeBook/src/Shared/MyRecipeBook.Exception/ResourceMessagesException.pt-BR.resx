@@ -204,4 +204,7 @@
   <data name="VALIDATION_AT_LEAST_ONE_INGREDIENT_REQUIRED" xml:space="preserve">
     <value>Pelo menos um ingrediente é necessário</value>
   </data>
+  <data name="UNABLE_TO_GENERATE_RECIPE" xml:space="preserve">
+    <value>Não foi possível gerar a receita.</value>
+  </data>
 </root>
