@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using MyRecipeBook.Api.Configuration;
 using MyRecipeBook.Application.UseCases.Login.WithEmailAndPassword;
@@ -12,7 +13,6 @@ using MyRecipeBook.Communication.Requests;
 using MyRecipeBook.Communication.Responses;
 using MyRecipeBook.Domain.Extensions;
 using System.Security.Claims;
-
 namespace MyRecipeBook.Api.Controllers;
 
 [Route("[controller]")]
@@ -42,6 +42,7 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost("password-recovery/reset")]
+    [EnableRateLimiting("password-reset")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ResetPassword(

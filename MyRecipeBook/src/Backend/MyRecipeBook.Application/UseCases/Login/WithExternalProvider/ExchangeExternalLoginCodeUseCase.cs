@@ -43,10 +43,14 @@ public class ExchangeExternalLoginCodeUseCase : IExchangeExternalLoginCodeUseCas
         if (isCodeValid == false)
             throw new ErrorOnValidationException([ResourceMessagesException.VERIFICATION_CODE_INVALID]);
 
-        await _verificationCodeWriteOnlyRepository.Delete(verificationCode);
-
+        var affectedRows = await _verificationCodeWriteOnlyRepository.Delete(verificationCode);
+        // Race condition fix
+        if (affectedRows != 1)
+            throw new ErrorOnValidationException(
+                [ResourceMessagesException.VERIFICATION_CODE_INVALID]);
+        
         var user = await _userReadOnlyRepository.GetById(verificationCode.UserId);
-
+        
         return new ResponseRegisteredUserJson
         {
             Name = user!.Name,

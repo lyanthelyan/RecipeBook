@@ -1,6 +1,7 @@
 ﻿using MyRecipeBook.Communication.Requests;
 using MyRecipeBook.Domain.Entities;
 using MyRecipeBook.Domain.Enums;
+using MyRecipeBook.Domain.Repositories;
 using MyRecipeBook.Domain.Repositories.User;
 using MyRecipeBook.Domain.Repositories.VerificationCode;
 using MyRecipeBook.Domain.Security.PasswordHashing;
@@ -18,19 +19,22 @@ public class ResetPasswordUseCase : IResetPasswordUseCase
     private readonly IVerificationCodeWriteOnlyRepository _verificationCodeWriteOnlyRepository;
     private readonly IUserUpdateOnlyRepository _userUpdateOnlyRepository;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly IUnitOfWork _unitOfWork;
 
     public ResetPasswordUseCase(
         IUserReadOnlyRepository userReadOnlyRepository,
         IVerificationCodeReadOnlyRepository verificationCodeReadOnlyRepository, 
         IVerificationCodeWriteOnlyRepository verificationCodeWriteOnlyRepository, 
         IUserUpdateOnlyRepository userUpdateOnlyRepository, 
-        IPasswordHasher passwordHasher)
+        IPasswordHasher passwordHasher,
+        IUnitOfWork unitOfWork)
     {
         _userReadOnlyRepository = userReadOnlyRepository;
         _verificationCodeReadOnlyRepository = verificationCodeReadOnlyRepository;
         _verificationCodeWriteOnlyRepository = verificationCodeWriteOnlyRepository;
         _userUpdateOnlyRepository = userUpdateOnlyRepository;
         _passwordHasher = passwordHasher;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task Execute(RequestResetPasswordJson request)
@@ -47,11 +51,21 @@ public class ResetPasswordUseCase : IResetPasswordUseCase
 
         var hashedPassword = _passwordHasher.HashPassword(request.NewPassword);
 
-        await _userUpdateOnlyRepository.UpdatePassword(verificationCode.UserId, hashedPassword);
-
-        await _verificationCodeWriteOnlyRepository.Delete(verificationCode);
-
-
+        //Atomic operation
+        await _unitOfWork.ExecuteInTransaction(async () => 
+        {
+            var deletedRows = await _verificationCodeWriteOnlyRepository.Delete(verificationCode);
+            if (deletedRows != 1)
+            {
+                throw new ErrorOnValidationException([ResourceMessagesException.VERIFICATION_CODE_INVALID]);
+            }
+            
+            var updatedRows = await _userUpdateOnlyRepository.UpdatePassword(verificationCode.UserId, hashedPassword);
+            if (updatedRows != 1)
+            {
+                throw new InvalidOperationException(ResourceMessagesException.UNABLE_TO_UPDATE_PASSWORD);
+            }
+        });
     }
 
     private void ValidateAndThrowOnFailures(RequestResetPasswordJson request, VerificationCode verificationCode)

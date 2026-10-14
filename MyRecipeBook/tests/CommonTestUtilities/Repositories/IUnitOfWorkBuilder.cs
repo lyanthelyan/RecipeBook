@@ -9,6 +9,9 @@ public class IUnitOfWorkBuilder
     {
         var mock = new Mock<IUnitOfWork>();
 
+        mock.Setup(unit => unit.ExecuteInTransaction(It.IsAny<Func<Task>>()))
+            .Returns((Func<Task> operation) => operation());
+
         return mock.Object;
     }
 }

@@ -22,6 +22,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,7 +66,8 @@ builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddApplication();
 
-builder.Services.AddHostedService<DeleteUserAccountConsumer>();
+// BusService
+//builder.Services.AddHostedService<DeleteUserAccountConsumer>();
 
 builder.Services.AddOptions<ExternalLoginReturnUrlOptions>()
     .Bind(builder.Configuration.GetSection(ExternalLoginReturnUrlOptions.SectionName));
@@ -127,28 +129,40 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         jwtOptions.Events = new JwtBearerEvents
         {
             // Checks whether the token belongs to an active user.
+            // Checks if the tokenVersion is valid.
             OnTokenValidated = async context =>
             {
                 var subject =
                     context.Principal?.FindFirstValue(JwtRegisteredClaimNames.Sub)
                     ??
                     context.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+                var tokenVersionClaim = context.Principal?.FindFirstValue("tokenVersion");
 
                 if (Guid.TryParse(subject, out var userId) is false)
                 {
                     context.Fail("Invalid token subject");
                     return;
                 }
+                if (!int.TryParse(tokenVersionClaim, out var tokenVersion))
+                {
+                    context.Fail("Invalid token version");
+                    return;
+                }
 
                 var userRepository = context.HttpContext.RequestServices
                     .GetRequiredService<IUserReadOnlyRepository>();
 
-                var userExists =
-                    await userRepository.ExistActiveUserWithId(userId);
+                var user = await userRepository.GetById(userId);
 
-                if (userExists is false)
+                if (user is null)
                 {
                     context.Fail("User not found or inactive");
+                    return;
+                }
+                if (tokenVersion != user!.TokenVersion)
+                {
+                    context.Fail("Invalid token version");
+                    return;
                 }
             },
 
@@ -180,7 +194,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
                 await context.Response.WriteAsJsonAsync(response);
             }
-        };
+        }; ;
     })
     .AddGoogleOpenIdConnect(googleOptions =>
     {
@@ -195,8 +209,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
     });
+// Requests Limiter
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.AddPolicy("password-reset", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+});
 
 var app = builder.Build();
+
+
 
 // Applies the configured localization rules to each request.
 var localizationOptions =
@@ -218,6 +250,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseRateLimiter();
 
 // Executes pending database migrations before starting the API.
 await ExecuteMigrations();

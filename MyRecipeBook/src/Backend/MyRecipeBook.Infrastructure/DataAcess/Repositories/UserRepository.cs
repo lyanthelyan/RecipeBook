@@ -46,11 +46,13 @@ internal sealed class UserRepository : IUserWriteOnlyRepository, IUserReadOnlyRe
             .SingleOrDefaultAsync(user => user.Active && user.Id == id);
     }
 
-    public async Task UpdatePassword(Guid userId, string passwordHash)
+    public async Task<int> UpdatePassword(Guid userId, string passwordHash)
     {
-        await _dbContext.Users
+        return await _dbContext.Users
             .Where(user => user.Id == userId)
-            .ExecuteUpdateAsync(setter => setter.SetProperty(user => user.Password, passwordHash));
+            .ExecuteUpdateAsync(setter => setter
+                .SetProperty(user => user.Password, passwordHash)
+                .SetProperty(user => user.TokenVersion, user => user.TokenVersion + 1));
     }
 
     public void UpdateProfile(User user)

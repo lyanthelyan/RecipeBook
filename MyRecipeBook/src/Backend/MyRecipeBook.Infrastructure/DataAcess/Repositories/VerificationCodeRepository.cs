@@ -22,9 +22,9 @@ internal sealed class VerificationCodeRepository : IVerificationCodeWriteOnlyRep
         await _dbContext.VerificationCodes.AddAsync(verificationCode);
     }
 
-    public async Task Delete(VerificationCode verificationCode)
+    public async Task<int> Delete(VerificationCode verificationCode)
     {
-        await _dbContext.VerificationCodes
+        return await _dbContext.VerificationCodes
             .Where(code => code.Id == verificationCode.Id)
             .ExecuteDeleteAsync();
     }

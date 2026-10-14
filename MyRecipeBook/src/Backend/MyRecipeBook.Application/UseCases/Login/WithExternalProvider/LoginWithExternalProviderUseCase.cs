@@ -38,9 +38,10 @@ public class LoginWithExternalProviderUseCase : ILoginWithExternalProviderUseCas
                 Name = externalLoginInfo.Name,
                 Password = "-"
             };
+            
+            await _userWriteOnlyRepository.Add(user);
         }
-        await _userWriteOnlyRepository.Add(user);
-
+        
         var verificationCode = new Domain.Entities.VerificationCode
         {
             UserId = user.Id,
