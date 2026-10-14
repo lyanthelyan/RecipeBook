@@ -39,6 +39,7 @@ public class LoginWithExternalProviderUseCase : ILoginWithExternalProviderUseCas
                 Password = "-"
             };
         }
+        await _userWriteOnlyRepository.Add(user);
 
         var verificationCode = new Domain.Entities.VerificationCode
         {
@@ -46,7 +47,6 @@ public class LoginWithExternalProviderUseCase : ILoginWithExternalProviderUseCas
             Code = GenerateCode(),
             Type = VerificationCodeType.ExternalLoginExchange
         };
-
         await _verificationCodeWriteOnlyRepository.Replace(verificationCode);
         
         await _unitOfWork.Commit();

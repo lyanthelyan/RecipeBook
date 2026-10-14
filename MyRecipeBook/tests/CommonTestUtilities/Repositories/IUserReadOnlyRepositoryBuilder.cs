@@ -30,4 +30,9 @@ public class IUserReadOnlyRepositoryBuilder
         return this;
     }
 
+    public IUserReadOnlyRepositoryBuilder GetById(User user)
+    {
+        _mock.Setup(repository => repository.GetById(user.Id)).ReturnsAsync(user);
+        return this;
+    }
 }

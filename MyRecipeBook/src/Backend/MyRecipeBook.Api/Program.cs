@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using MyRecipeBook.Api.BackgroundServices;
 using MyRecipeBook.Api.Configuration;
 using MyRecipeBook.Api.Converters;
 using MyRecipeBook.Api.Filters;
@@ -63,6 +64,8 @@ builder.Services.AddOpenApi();
 builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddApplication();
+
+builder.Services.AddHostedService<DeleteUserAccountConsumer>();
 
 builder.Services.AddOptions<ExternalLoginReturnUrlOptions>()
     .Bind(builder.Configuration.GetSection(ExternalLoginReturnUrlOptions.SectionName));
@@ -182,9 +185,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddGoogleOpenIdConnect(googleOptions =>
     {
         googleOptions.ClientId = builder.Configuration
-            .GetValue<string>("Settings:Google:ClientId");
+            .GetValue<string>("Settings:Google:ClientId")!;
         googleOptions.ClientSecret = builder.Configuration
-            .GetValue<string>("Settings:Google:ClientSecret");
+            .GetValue<string>("Settings:Google:ClientSecret")!;
         googleOptions.CallbackPath = "/signin-google";
         googleOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     })
