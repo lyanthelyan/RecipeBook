@@ -46,11 +46,13 @@ internal sealed class UserRepository : IUserWriteOnlyRepository, IUserReadOnlyRe
             .SingleOrDefaultAsync(user => user.Active && user.Id == id);
     }
 
-    public async Task UpdatePassword(Guid userId, string passwordHash)
+    public async Task<int> UpdatePassword(Guid userId, string passwordHash)
     {
-        await _dbContext.Users
+        return await _dbContext.Users
             .Where(user => user.Id == userId)
-            .ExecuteUpdateAsync(setter => setter.SetProperty(user => user.Password, passwordHash));
+            .ExecuteUpdateAsync(setter => setter
+                .SetProperty(user => user.Password, passwordHash)
+                .SetProperty(user => user.TokenVersion, user => user.TokenVersion + 1));
     }
 
     public void UpdateProfile(User user)
@@ -66,5 +68,29 @@ internal sealed class UserRepository : IUserWriteOnlyRepository, IUserReadOnlyRe
         await _dbContext.Users
             .Where(user => user.Id == userId)
             .ExecuteUpdateAsync(setter => setter.SetProperty(user => user.HasImage, hasProfilePicture));
+    }
+
+    public async Task DeleteAccount(Guid userId)
+    {
+        var user = await _dbContext.Users
+            .SingleOrDefaultAsync(user => user.Active == false && user.Id == userId);
+        if (user is not null)
+        {
+            var recipes = await _dbContext.Recipes.Where(recipe => recipe.UserId == userId).ToListAsync();
+            _dbContext.Recipes.RemoveRange(recipes);
+
+            var verificationCodes = await _dbContext.VerificationCodes.Where(verificationCode => verificationCode.UserId == userId).ToListAsync();
+            _dbContext.VerificationCodes.RemoveRange(verificationCodes);
+
+            _dbContext.Users.Remove(user);
+        }
+            
+    }
+
+    public async Task DeactivateAccount(Guid userId)
+    {
+        await _dbContext.Users
+            .Where(user => user.Id == userId)
+            .ExecuteUpdateAsync(setter => setter.SetProperty(user => user.Active, false));
     }
 }

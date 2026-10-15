@@ -3,6 +3,6 @@
 public interface IUserUpdateOnlyRepository
 {
     void UpdateProfile(Entities.User user);
-    Task UpdatePassword(Guid userId, string passwordHasher);
+    Task<int> UpdatePassword(Guid userId, string passwordHasher);
     Task UpdateProfilePictureStatus(Guid userId, bool hasProfilePicture);
 }

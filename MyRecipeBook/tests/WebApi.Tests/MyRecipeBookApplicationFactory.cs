@@ -1,5 +1,7 @@
-﻿using CommonTestUtilities.AI;
+﻿using Azure.Storage.Blobs;
+using CommonTestUtilities.AI;
 using CommonTestUtilities.Entities;
+using CommonTestUtilities.Storage;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -7,9 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Moq;
 using MyRecipeBook.Domain.AI;
 using MyRecipeBook.Domain.Security.PasswordHashing;
 using MyRecipeBook.Domain.Security.Tokens;
+using MyRecipeBook.Domain.Storage;
 using MyRecipeBook.Infrastructure.DataAcess;
 using Testcontainers.Azurite;
 using Testcontainers.MsSql;
@@ -25,7 +29,9 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
     private MyRecipeBook.Domain.Entities.Recipe _recipe = default!;
     private readonly MsSqlContainer _msSqlContainer;
     private readonly AzuriteContainer _azuriteContainer;
-    
+    public Mock<IStorageService> StorageMock { get; } =
+        Mock.Get(IStorageServiceBuilder.Build());
+
     public MyRecipeBookApplicationFactory()
     {
         _msSqlContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU10-ubuntu-22.04")
@@ -53,6 +59,10 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
         {
             services.RemoveAll<IGenerateRecipeAI>();
             services.AddScoped(_ => IGenerateRecipeAIBuilder.Build());
+            services.RemoveAll<IStorageService>();
+            services.AddSingleton<IStorageService>(StorageMock.Object);
+            services.AddSingleton<BlobServiceClient>(_ => new BlobServiceClient(_azuriteContainer.GetConnectionString()));
+
         });
     }
 

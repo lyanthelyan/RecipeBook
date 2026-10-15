@@ -14,10 +14,23 @@ public class IStorageServiceBuilder
 
         mock.Setup(service => service.GetProfilePictureUrl(
             It.IsAny<User>())).Returns(FakeUrl);
-        
+
         mock.Setup(service => service.GetRecipeIllustrationUrl(
-            It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(FakeUrl);
-        
+            It.IsAny<Guid>(),
+            It.IsAny<Guid>())).Returns(FakeUrl);
+
+        mock.Setup(service => service.UploadProfilePicture(
+            It.IsAny<User>(),
+            It.IsAny<Stream>(),
+            It.IsAny<string>()))
+            .Returns(Task.CompletedTask);
+
+        mock.Setup(service => service.UploadIllustration(
+            It.IsAny<Recipe>(),
+            It.IsAny<Stream>(),
+            It.IsAny<string>()))
+            .Returns(Task.CompletedTask);
+
         return mock.Object;
     }
 }

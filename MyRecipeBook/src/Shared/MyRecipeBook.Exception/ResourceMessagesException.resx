@@ -207,4 +207,7 @@
   <data name="UNABLE_TO_GENERATE_RECIPE" xml:space="preserve">
     <value>Unable to generate the recipe.</value>
   </data>
+  <data name="UNABLE_TO_UPDATE_PASSWORD" xml:space="preserve">
+    <value>An error occurred, unable to update the password.</value>
+  </data>
 </root>
