@@ -2,5 +2,7 @@
 
 public enum VerificationCodeType
 {
-    PasswordRecovery = 0
+    PasswordRecovery = 0,
+    ExternalLoginExchange = 1
+       
 }

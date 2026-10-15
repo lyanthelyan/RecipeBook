@@ -2,5 +2,6 @@
 
 public interface IVerificationCodeWriteOnlyRepository
 {
-    Task Add(Entities.VerificationCode verificationCode);
+    Task Replace(Entities.VerificationCode verificationCode);
+    Task Delete(Entities.VerificationCode verificationCode);
 }

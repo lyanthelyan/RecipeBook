@@ -1,6 +1,7 @@
 using CommonTestUtilities.Entities;
 using CommonTestUtilities.Identity;
 using CommonTestUtilities.Repositories;
+using CommonTestUtilities.Storage;
 using MyRecipeBook.Application.UseCases.Recipe.Delete;
 using MyRecipeBook.Exception;
 using MyRecipeBook.Exception.ExceptionsBase;
@@ -45,7 +46,7 @@ public class DeleteRecipeByIdUseCaseTests
     {
         var loggedUser = ILoggedUserBuilder.Build(user);
         var repository = IRecipeWriteOnlyRepositoryBuilder.Build(recipe);
-
-        return new DeleteRecipeByIdUseCase(loggedUser, repository);
+        var storageServiceBuilder = IStorageServiceBuilder.Build();
+        return new DeleteRecipeByIdUseCase(loggedUser, repository, storageServiceBuilder);
     }
 }

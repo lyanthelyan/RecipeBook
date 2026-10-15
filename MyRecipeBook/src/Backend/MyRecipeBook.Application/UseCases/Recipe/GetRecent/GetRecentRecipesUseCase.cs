@@ -1,27 +1,35 @@
-﻿using MyRecipeBook.Communication.Responses;
+﻿using Mapster;
+using MyRecipeBook.Application.Extensions;
+using MyRecipeBook.Communication.Responses;
 using MyRecipeBook.Domain.Identity;
 using MyRecipeBook.Domain.Repositories.Recipe;
-using Mapster;
+using MyRecipeBook.Domain.Storage;
 namespace MyRecipeBook.Application.UseCases.Recipe.GetRecent;
 
 public class GetRecentRecipesUseCase : IGetRecentRecipesUseCase
 {
     private readonly ILoggedUser _loggedUser;
     private readonly IRecipeReadOnlyRepository _repository;
+    private readonly IStorageService _storageService;
 
-    public GetRecentRecipesUseCase(ILoggedUser loggedUser, IRecipeReadOnlyRepository repository)
+    public GetRecentRecipesUseCase(
+        ILoggedUser loggedUser, 
+        IRecipeReadOnlyRepository repository,
+        IStorageService storageService)
     {
         _loggedUser = loggedUser;
         _repository = repository;
+        _storageService = storageService;
     }
 
     public async Task<ResponseRecipesJson> Execute()
     {
-        var recipes = await _repository.GetRecentRecipes(_loggedUser.GetUserId());
+        var userId = _loggedUser.GetUserId();
+        var recipes = await _repository.GetRecentRecipes(userId);
 
         var response = new ResponseRecipesJson
         {
-            Recipes = recipes.Adapt<IList<ResponseRecipeSummaryJson>>()
+            Recipes = recipes.ToResponseJson(userId, _storageService)
         };
         
         return response;

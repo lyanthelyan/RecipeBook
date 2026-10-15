@@ -6,7 +6,7 @@ using Shouldly;
 using System.Net;
 using WebApi.Tests.Resources;
 
-namespace WebApi.Tests.PasswordRecovery;
+namespace WebApi.Tests.PasswordRecovery.RequestCode;
 
 public class RequestPasswordRecoveryCodeTests : BaseIntegrationTest
 {

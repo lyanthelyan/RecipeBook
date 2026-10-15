@@ -2,6 +2,7 @@
 using MyRecipeBook.Communication.Responses;
 using MyRecipeBook.Domain.Identity;
 using MyRecipeBook.Domain.Repositories.Recipe;
+using MyRecipeBook.Domain.Storage;
 using MyRecipeBook.Exception;
 using MyRecipeBook.Exception.ExceptionsBase;
 
@@ -11,22 +12,27 @@ public class GetRecipeByIdUseCase : IGetRecipeByIdUseCase
 {
     private readonly ILoggedUser _loggedUser;
     private readonly IRecipeReadOnlyRepository _recipeRepository;
+    private readonly IStorageService _storageService;
     public GetRecipeByIdUseCase(
         ILoggedUser loggedUser, 
-        IRecipeReadOnlyRepository recipeRepository)
+        IRecipeReadOnlyRepository recipeRepository,
+        IStorageService storageService)
     {
         _loggedUser = loggedUser;
         _recipeRepository = recipeRepository;
+        _storageService = storageService;
     }
     public async Task<ResponseRecipeJson> Execute(Guid recipeId)
     {
-        
-        var recipe = await _recipeRepository.GetById(recipeId, _loggedUser.GetUserId());
-        
+        var recipe = await _recipeRepository.GetById(recipeId, _loggedUser.GetUserId()); 
         if (recipe is null)
             throw new NotFoundException(ResourceMessagesException.VALIDATION_RECIPE_NOT_FOUND);
 
-        return recipe.Adapt<ResponseRecipeJson>();
+        var response = recipe.Adapt<ResponseRecipeJson>();
+        response.ImageUrl = recipe.HasImage ? _storageService
+            .GetRecipeIllustrationUrl(userId: recipe.UserId, recipeId: recipe.Id) : string.Empty;
+
+        return response;
 
     }
 }

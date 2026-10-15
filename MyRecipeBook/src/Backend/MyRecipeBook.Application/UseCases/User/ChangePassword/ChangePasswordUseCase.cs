@@ -24,13 +24,13 @@ public class ChangePasswordUseCase : IChangePasswordUseCase
     public async Task Execute(RequestChangePasswordJson request)
     {
         var loggedUser = await _loggedUser.Get();
-        Validate(request, loggedUser);
+        ValidateAndThrowOnFailures(request, loggedUser);
         var hashedPassword = _passwordHasher.HashPassword(request.NewPassword);
         await _userUpdateOnlyRepository.UpdatePassword(loggedUser.Id, hashedPassword);
 
     }
 
-    private void Validate(RequestChangePasswordJson request, Domain.Entities.User loggedUser)
+    private void ValidateAndThrowOnFailures(RequestChangePasswordJson request, Domain.Entities.User loggedUser)
     {
         var result = new ChangePasswordValidator().Validate(request);
 

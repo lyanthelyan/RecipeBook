@@ -1,14 +1,19 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using MyRecipeBook.Application.Mappings;
 using MyRecipeBook.Application.UseCases.Login.WithEmailAndPassword;
+using MyRecipeBook.Application.UseCases.Login.WithExternalProvider;
 using MyRecipeBook.Application.UseCases.PasswordRecovery.RequestCode;
+using MyRecipeBook.Application.UseCases.PasswordRecovery.ResetPassword;
+using MyRecipeBook.Application.UseCases.Recipe.ChangeIllustration;
 using MyRecipeBook.Application.UseCases.Recipe.Delete;
 using MyRecipeBook.Application.UseCases.Recipe.Filter;
+using MyRecipeBook.Application.UseCases.Recipe.GenerateRecipeAI;
 using MyRecipeBook.Application.UseCases.Recipe.GetById;
 using MyRecipeBook.Application.UseCases.Recipe.GetRecent;
 using MyRecipeBook.Application.UseCases.Recipe.Register;
 using MyRecipeBook.Application.UseCases.Recipe.Update;
 using MyRecipeBook.Application.UseCases.User.ChangePassword;
+using MyRecipeBook.Application.UseCases.User.ChangeProfilePicture;
 using MyRecipeBook.Application.UseCases.User.Profile;
 using MyRecipeBook.Application.UseCases.User.Register;
 using MyRecipeBook.Application.UseCases.User.Update;
@@ -40,6 +45,12 @@ public static class DependencyInjectionExtension
             services.AddScoped<IFilterRecipesUseCase, FilterRecipesUseCase>();
             services.AddScoped<IRequestPasswordRecoveryCodeUseCase, RequestPasswordRecoveryCodeUseCase>();
             //services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IResetPasswordUseCase, ResetPasswordUseCase>();
+            services.AddScoped<IChangeProfilePictureUseCase, ChangeProfilePictureUseCase>();
+            services.AddScoped<IChangeIllustrationUseCase, ChangeIllustrationUseCase>();
+            services.AddScoped<IGenerateRecipeAIUseCase, GenerateRecipeAIUseCase>();
+            services.AddScoped<IExchangeExternalLoginCodeUseCase, ExchangeExternalLoginCodeUseCase>();
+            services.AddScoped<ILoginWithExternalProviderUseCase, LoginWithExternalProviderUseCase>();
 
         }
     }

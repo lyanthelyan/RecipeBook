@@ -39,6 +39,13 @@ internal sealed class UserRepository : IUserWriteOnlyRepository, IUserReadOnlyRe
             .SingleOrDefaultAsync(user => user.Active && user.Email.Equals(email));
     }
 
+    public async Task<User?> GetById(Guid id)
+    {
+        return await _dbContext.Users
+            .AsNoTracking()
+            .SingleOrDefaultAsync(user => user.Active && user.Id == id);
+    }
+
     public async Task UpdatePassword(Guid userId, string passwordHash)
     {
         await _dbContext.Users
@@ -52,5 +59,12 @@ internal sealed class UserRepository : IUserWriteOnlyRepository, IUserReadOnlyRe
         _dbContext.Entry(user).Property(user => user.Name).IsModified = true;
         _dbContext.Entry(user).Property(user => user.Email).IsModified = true;
         
+    }
+
+    public async Task UpdateProfilePictureStatus(Guid userId, bool hasProfilePicture)
+    {
+        await _dbContext.Users
+            .Where(user => user.Id == userId)
+            .ExecuteUpdateAsync(setter => setter.SetProperty(user => user.HasImage, hasProfilePicture));
     }
 }

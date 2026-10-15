@@ -24,6 +24,7 @@ internal sealed class JwtTokenHandler : IAccessTokensGenerator
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString())
         };
+        
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Expires = DateTime.UtcNow.AddMinutes(_expirationTimeMinutes),
@@ -32,7 +33,6 @@ internal sealed class JwtTokenHandler : IAccessTokensGenerator
         };
         var handler = new JsonWebTokenHandler();
         return handler.CreateToken(tokenDescriptor);
-
     }
 
     private SymmetricSecurityKey Credentials()

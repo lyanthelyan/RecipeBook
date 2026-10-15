@@ -298,6 +298,14 @@ Esse desenho mantém o controller enxuto, o caso de uso independente do EF Core 
 
 O núcleo de usuários, autenticação e receitas está funcional e coberto por testes. O fluxo de recuperação de senha já gera e persiste códigos de verificação sem revelar se o e-mail está cadastrado. O envio do código por e-mail e a etapa de redefinição da senha permanecem como evolução planejada.
 
----
+## Créditos e contexto
 
-Este repositório foi desenvolvido como projeto de portfólio, com foco em backend .NET, qualidade de código, segurança e testes automatizados.
+Este projeto foi desenvolvido durante meus estudos de desenvolvimento Back-End .NET, com orientação e apoio do professor [Welisson Arley](https://github.com/welissonArley), cujo curso serviu como base para parte da arquitetura, conceitos e funcionalidades apresentadas.
+
+Ao longo do desenvolvimento, busquei não apenas reproduzir a implementação apresentada em aula, mas compreender as decisões técnicas envolvidas e consolidar os conhecimentos por meio da implementação, depuração, testes e evolução do projeto.
+
+O projeto também foi expandido e adaptado durante meus estudos, servindo como ambiente prático para aprofundar conhecimentos em ASP.NET Core, arquitetura em camadas, Entity Framework Core, SQL Server, autenticação JWT, FluentMigrator, Docker, Testcontainers, testes automatizados e integração com serviços externos.
+
+Meu objetivo ao disponibilizar este repositório é demonstrar os conhecimentos adquiridos e minha capacidade de compreender, implementar e evoluir uma aplicação Back-End em .NET.
+
+Agradeço ao professor Welisson Arley pela orientação e pelo conteúdo utilizado como base durante o processo de aprendizado.

@@ -18,14 +18,16 @@ public class IUserReadOnlyRepositoryBuilder
         return _mock.Object;
     }
 
-    public void ExistActiveUserWithEmail(string email)
+    public IUserReadOnlyRepositoryBuilder ExistActiveUserWithEmail(string email)
     {
         _mock.Setup(repository => repository.ExistActiveUserWithEmail(email)).ReturnsAsync(true);
+        return this;
     }
 
-    public void GetByEmail(User user)
+    public IUserReadOnlyRepositoryBuilder GetByEmail(User user)
     {
         _mock.Setup(repository => repository.GetByEmail(user.Email)).ReturnsAsync(user);
+        return this;
     }
 
 }

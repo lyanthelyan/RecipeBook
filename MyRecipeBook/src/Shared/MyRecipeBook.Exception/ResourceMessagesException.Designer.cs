@@ -61,6 +61,15 @@ namespace MyRecipeBook.Exception {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to generate the recipe..
+        /// </summary>
+        public static string UNABLE_TO_GENERATE_RECIPE {
+            get {
+                return ResourceManager.GetString("UNABLE_TO_GENERATE_RECIPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unknown error..
         /// </summary>
         public static string UNKNOWN_ERROR {
@@ -75,6 +84,24 @@ namespace MyRecipeBook.Exception {
         public static string VALIDATION_ACCESS_TOKEN_REQUIRED {
             get {
                 return ResourceManager.GetString("VALIDATION_ACCESS_TOKEN_REQUIRED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to At least one ingredient is required.
+        /// </summary>
+        public static string VALIDATION_AT_LEAST_ONE_INGREDIENT_REQUIRED {
+            get {
+                return ResourceManager.GetString("VALIDATION_AT_LEAST_ONE_INGREDIENT_REQUIRED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to At least one instruction is required..
+        /// </summary>
+        public static string VALIDATION_AT_LEAST_ONE_INSTRUCTION_REQUIRED {
+            get {
+                return ResourceManager.GetString("VALIDATION_AT_LEAST_ONE_INSTRUCTION_REQUIRED", resourceCulture);
             }
         }
         
@@ -129,6 +156,15 @@ namespace MyRecipeBook.Exception {
         public static string VALIDATION_NAME_REQUIRED {
             get {
                 return ResourceManager.GetString("VALIDATION_NAME_REQUIRED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only PNG OR JPG/JPEG images are accepted..
+        /// </summary>
+        public static string VALIDATION_ONLY_IMAGES_ACCEPTED {
+            get {
+                return ResourceManager.GetString("VALIDATION_ONLY_IMAGES_ACCEPTED", resourceCulture);
             }
         }
         
@@ -282,6 +318,15 @@ namespace MyRecipeBook.Exception {
         public static string VALIDATION_RESOURCE_ACCESS_DENIED {
             get {
                 return ResourceManager.GetString("VALIDATION_RESOURCE_ACCESS_DENIED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid or expired code..
+        /// </summary>
+        public static string VERIFICATION_CODE_INVALID {
+            get {
+                return ResourceManager.GetString("VERIFICATION_CODE_INVALID", resourceCulture);
             }
         }
     }

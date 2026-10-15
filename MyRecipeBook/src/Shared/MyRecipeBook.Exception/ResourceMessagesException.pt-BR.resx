@@ -192,4 +192,19 @@
   <data name="VALIDATION_RECIPE_NOT_FOUND" xml:space="preserve">
     <value>Ops! Não conseguimos encontrar esta receita.</value>
   </data>
+  <data name="VERIFICATION_CODE_INVALID" xml:space="preserve">
+    <value>Código inválido ou expirado.</value>
+  </data>
+  <data name="VALIDATION_ONLY_IMAGES_ACCEPTED" xml:space="preserve">
+    <value>Apenas imagens PNG ou JPG/JPEG são aceitas.</value>
+  </data>
+  <data name="VALIDATION_AT_LEAST_ONE_INSTRUCTION_REQUIRED" xml:space="preserve">
+    <value>Pelo menos uma instrução é necessária.</value>
+  </data>
+  <data name="VALIDATION_AT_LEAST_ONE_INGREDIENT_REQUIRED" xml:space="preserve">
+    <value>Pelo menos um ingrediente é necessário</value>
+  </data>
+  <data name="UNABLE_TO_GENERATE_RECIPE" xml:space="preserve">
+    <value>Não foi possível gerar a receita.</value>
+  </data>
 </root>
