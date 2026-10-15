@@ -1,7 +1,10 @@
 using CommonTestUtilities.Files;
 using CommonTestUtilities.Requests;
+using CommonTestUtilities.Storage;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using MyRecipeBook.Domain.Extensions;
+using MyRecipeBook.Domain.Storage;
 using MyRecipeBook.Exception;
 using Shouldly;
 using System.Globalization;
@@ -17,10 +20,11 @@ public class RegisterRecipeTests : BaseIntegrationTest
     private const string REQUEST_URI = "/recipes";
     private const string FILE_FIELD_NAME = "recipeIllustration";
     private readonly UserIdentityManager _user1;
-
+    private readonly Mock<IStorageService> _storageMock;
     public RegisterRecipeTests(MyRecipeBookApplicationFactory factory) : base(factory)
     {
         _user1 = factory.User1;
+        _storageMock = factory.StorageMock;
     }
 
     [Fact]
@@ -93,7 +97,7 @@ public class RegisterRecipeTests : BaseIntegrationTest
         var recipeId = responseData.RootElement.GetProperty("id").GetGuid();
         recipeId.ShouldNotBe(Guid.Empty);
         responseData.RootElement.GetProperty("title").GetString().ShouldBe(request.Title);
-        responseData.RootElement.GetProperty("imageUrl").GetString().ShouldNotBeNullOrEmpty();
+        responseData.RootElement.GetProperty("imageUrl").GetString().ShouldBe(IStorageServiceBuilder.FakeUrl);
 
         var recipe = await DbContext.Recipes
             .Include(recipe => recipe.Ingredients)
@@ -120,11 +124,12 @@ public class RegisterRecipeTests : BaseIntegrationTest
         
         request.DishTypes.ShouldAllBe(dishType => recipe.DishTypes.Any(registeredDishType =>
             registeredDishType.Type == (MyRecipeBook.Domain.Enums.DishType)dishType));
-
-        var existImageInStorage = await BlobServiceClient.GetBlobContainerClient(_user1.GetId().ToString())
-            .GetBlobClient(recipeId.ToString())
-            .ExistsAsync();
-        existImageInStorage.Value.ShouldBeTrue();
+        _storageMock.Verify(service =>
+        service.UploadIllustration(
+            It.Is<MyRecipeBook.Domain.Entities.Recipe>(recipe => recipe.Id == recipeId),
+            It.IsAny<Stream>(),
+            It.IsAny<string>()),
+        Times.Once);
     }
     [Theory]
     [ClassData(typeof(CultureInlineData))]

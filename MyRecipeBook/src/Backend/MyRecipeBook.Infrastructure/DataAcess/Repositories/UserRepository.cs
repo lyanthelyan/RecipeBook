@@ -69,4 +69,28 @@ internal sealed class UserRepository : IUserWriteOnlyRepository, IUserReadOnlyRe
             .Where(user => user.Id == userId)
             .ExecuteUpdateAsync(setter => setter.SetProperty(user => user.HasImage, hasProfilePicture));
     }
+
+    public async Task DeleteAccount(Guid userId)
+    {
+        var user = await _dbContext.Users
+            .SingleOrDefaultAsync(user => user.Active == false && user.Id == userId);
+        if (user is not null)
+        {
+            var recipes = await _dbContext.Recipes.Where(recipe => recipe.UserId == userId).ToListAsync();
+            _dbContext.Recipes.RemoveRange(recipes);
+
+            var verificationCodes = await _dbContext.VerificationCodes.Where(verificationCode => verificationCode.UserId == userId).ToListAsync();
+            _dbContext.VerificationCodes.RemoveRange(verificationCodes);
+
+            _dbContext.Users.Remove(user);
+        }
+            
+    }
+
+    public async Task DeactivateAccount(Guid userId)
+    {
+        await _dbContext.Users
+            .Where(user => user.Id == userId)
+            .ExecuteUpdateAsync(setter => setter.SetProperty(user => user.Active, false));
+    }
 }

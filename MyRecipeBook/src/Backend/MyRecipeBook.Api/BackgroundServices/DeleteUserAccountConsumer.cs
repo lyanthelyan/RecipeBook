@@ -1,4 +1,5 @@
 ﻿using Azure.Messaging.ServiceBus;
+using MyRecipeBook.Application.UseCases.User.DeleteAccount;
 
 namespace MyRecipeBook.Api.BackgroundServices;
 
@@ -7,11 +8,12 @@ public sealed class DeleteUserAccountConsumer : BackgroundService
     private const string QueueName = "account-deletion";
 
     private readonly ServiceBusProcessor _processor;
-
-    public DeleteUserAccountConsumer(ServiceBusClient serviceBusClient)
+    private readonly IServiceScopeFactory _serviceScopeFactory;
+    public DeleteUserAccountConsumer(ServiceBusClient serviceBusClient, IServiceScopeFactory serviceScopeFactory)
     {
         _processor = serviceBusClient
             .CreateProcessor(QueueName, new ServiceBusProcessorOptions());
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -28,7 +30,11 @@ public sealed class DeleteUserAccountConsumer : BackgroundService
 
         var userId = Guid.Parse(body);
 
-        //TO DO Repass to an useCase
+        using var scope = _serviceScopeFactory.CreateScope();
+
+        var useCase = scope.ServiceProvider.GetRequiredService<IDeleteUserAccountPermanentlyUseCase>();
+
+        await useCase.Execute(userId);
 
         await args.CompleteMessageAsync(args.Message);
     }
