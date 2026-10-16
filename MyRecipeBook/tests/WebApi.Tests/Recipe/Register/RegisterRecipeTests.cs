@@ -74,10 +74,12 @@ public class RegisterRecipeTests : BaseIntegrationTest
         request.DishTypes.ShouldAllBe(dishType => recipe.DishTypes.Any(registeredDishType =>
             registeredDishType.Type == (MyRecipeBook.Domain.Enums.DishType)dishType));
 
-        var existImageInStorage = await BlobServiceClient.GetBlobContainerClient(_user1.GetId().ToString())
-            .GetBlobClient(recipeId.ToString())
-            .ExistsAsync();
-        existImageInStorage.Value.ShouldBeFalse();
+        _storageMock.Verify(service =>
+        service.UploadIllustration(
+            It.Is<MyRecipeBook.Domain.Entities.Recipe>(recipe => recipe.Id == recipeId),
+            It.IsAny<Stream>(),
+            It.IsAny<string>()),
+        Times.Never);
     }
     [Fact]
     public async Task Success_WithImage()
