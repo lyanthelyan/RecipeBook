@@ -1,5 +1,4 @@
-﻿using Azure.Storage.Blobs;
-using CommonTestUtilities.AI;
+﻿using CommonTestUtilities.AI;
 using CommonTestUtilities.Entities;
 using CommonTestUtilities.Storage;
 using Microsoft.AspNetCore.Hosting;
@@ -15,7 +14,6 @@ using MyRecipeBook.Domain.Security.PasswordHashing;
 using MyRecipeBook.Domain.Security.Tokens;
 using MyRecipeBook.Domain.Storage;
 using MyRecipeBook.Infrastructure.DataAcess;
-using Testcontainers.Azurite;
 using Testcontainers.MsSql;
 using WebApi.Tests.Resources;
 
@@ -28,7 +26,6 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
     private MyRecipeBook.Domain.Entities.User _user = default!;
     private MyRecipeBook.Domain.Entities.Recipe _recipe = default!;
     private readonly MsSqlContainer _msSqlContainer;
-    private readonly AzuriteContainer _azuriteContainer;
     public Mock<IStorageService> StorageMock { get; } =
         Mock.Get(IStorageServiceBuilder.Build());
 
@@ -36,8 +33,6 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
     {
         _msSqlContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU10-ubuntu-22.04")
             .Build();
-        _azuriteContainer = new AzuriteBuilder("mcr.microsoft.com/azure-storage/azurite:latest")
-        .Build();
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -50,8 +45,6 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
                 new Dictionary<string, string?>
                 {
                     ["ConnectionStrings:DefaultConnection"] = _msSqlContainer
-                        .GetConnectionString(),
-                    ["ConnectionStrings:BlobStorage"] = _azuriteContainer
                         .GetConnectionString()
                 });
         })
@@ -61,7 +54,6 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
             services.AddScoped(_ => IGenerateRecipeAIBuilder.Build());
             services.RemoveAll<IStorageService>();
             services.AddSingleton<IStorageService>(StorageMock.Object);
-            services.AddSingleton<BlobServiceClient>(_ => new BlobServiceClient(_azuriteContainer.GetConnectionString()));
 
         });
     }
@@ -69,7 +61,6 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
     public async Task InitializeAsync()
     {
         await _msSqlContainer.StartAsync();
-        await _azuriteContainer.StartAsync();
 
         await using var scope = Services.CreateAsyncScope();
         
@@ -114,7 +105,6 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
     {
         await base.DisposeAsync();
         await _msSqlContainer.DisposeAsync();
-        await _azuriteContainer.DisposeAsync();
         
     }
 }
