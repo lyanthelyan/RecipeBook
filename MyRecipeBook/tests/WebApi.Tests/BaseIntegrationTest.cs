@@ -7,7 +7,13 @@ using System.Net.Http.Json;
 namespace WebApi.Tests;
 
 [Collection(nameof(IntegrationTestCollection))]
-public abstract class BaseIntegrationTest : IAsyncLifetime, IDisposable
+
+public abstract class BaseIntegrationTest
+{
+
+}
+
+public abstract class BaseIntegrationTest<TFactory> : IAsyncLifetime, IDisposable
 {
     private readonly MyRecipeBookApplicationFactory _factory;
     private readonly IServiceScope _scope;

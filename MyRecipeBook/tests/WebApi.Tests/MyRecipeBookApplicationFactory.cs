@@ -1,6 +1,7 @@
 ﻿using CommonTestUtilities.AI;
 using CommonTestUtilities.Entities;
 using CommonTestUtilities.Storage;
+using DotNet.Testcontainers.Containers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
+using MyRecipeBook.Api.BackgroundServices;
 using MyRecipeBook.Domain.AI;
 using MyRecipeBook.Domain.Security.PasswordHashing;
 using MyRecipeBook.Domain.Security.Tokens;
@@ -35,7 +37,10 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
     {
         _msSqlContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU10-ubuntu-22.04")
             .Build();
-        _serviceBusContainer = new ServiceBusBuilder("mcr.microsoft.com/azure-messaging/servicebus-emulator:latest");
+        _serviceBusContainer = new ServiceBusBuilder("mcr.microsoft.com/azure-messaging/servicebus-emulator:latest")
+            .WithAcceptLicenseAgreement(true)
+            .WithConfig(Path.Combine(AppContext.BaseDirectory, "ServiceBusConfig.json"))
+            .Build();
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -47,24 +52,43 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
             configuration.AddInMemoryCollection(
                 new Dictionary<string, string?>
                 {
-                    ["ConnectionStrings:DefaultConnection"] = _msSqlContainer
-                        .GetConnectionString()
+                    ["ConnectionStrings:DefaultConnection"] =
+                        _msSqlContainer.GetConnectionString()
                 });
+
+            if (_serviceBusContainer.State == TestcontainersStates.Running)
+            {
+                configuration.AddInMemoryCollection(
+                    new Dictionary<string, string?>
+                    {
+                        ["ConnectionStrings:ServiceBus"] =
+                            _serviceBusContainer.GetConnectionString()
+                    });
+            }
         })
         .ConfigureTestServices(services =>
         {
             services.RemoveAll<IGenerateRecipeAI>();
             services.AddScoped(_ => IGenerateRecipeAIBuilder.Build());
+
             services.RemoveAll<IStorageService>();
             services.AddSingleton<IStorageService>(StorageMock.Object);
 
+            if (_serviceBusContainer.State != TestcontainersStates.Running)
+            {
+                var consumer = services.SingleOrDefault(service =>
+                    service.ImplementationType == typeof(DeleteUserAccountConsumer));
+
+                if (consumer is not null)
+                    services.Remove(consumer);
+            }
         });
     }
 
-    public async Task InitializeAsync()
+    public async virtual Task InitializeAsync()
     {
         await _msSqlContainer.StartAsync();
-
+        
         await using var scope = Services.CreateAsyncScope();
         
         var passwordHasher = scope.ServiceProvider
@@ -108,6 +132,6 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
     {
         await base.DisposeAsync();
         await _msSqlContainer.DisposeAsync();
-        
+        await _serviceBusContainer.DisposeAsync();
     }
 }
