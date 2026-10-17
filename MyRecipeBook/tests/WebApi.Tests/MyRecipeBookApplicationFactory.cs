@@ -15,6 +15,7 @@ using MyRecipeBook.Domain.Security.Tokens;
 using MyRecipeBook.Domain.Storage;
 using MyRecipeBook.Infrastructure.DataAcess;
 using Testcontainers.MsSql;
+using Testcontainers.ServiceBus;
 using WebApi.Tests.Resources;
 
 namespace WebApi.Tests;
@@ -26,6 +27,7 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
     private MyRecipeBook.Domain.Entities.User _user = default!;
     private MyRecipeBook.Domain.Entities.Recipe _recipe = default!;
     private readonly MsSqlContainer _msSqlContainer;
+    protected readonly ServiceBusContainer _serviceBusContainer;
     public Mock<IStorageService> StorageMock { get; } =
         Mock.Get(IStorageServiceBuilder.Build());
 
@@ -33,6 +35,7 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
     {
         _msSqlContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU10-ubuntu-22.04")
             .Build();
+        _serviceBusContainer = new ServiceBusBuilder("mcr.microsoft.com/azure-messaging/servicebus-emulator:latest");
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
