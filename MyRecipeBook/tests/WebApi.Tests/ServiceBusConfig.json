@@ -2,7 +2,7 @@
   "UserConfig": {
     "Namespaces": [
       {
-        "Name": "sb-emulatorns",
+        "Name": "sbemulatorns",
         "Queues": [
           {
             "Name": "account-deletion",
@@ -18,9 +18,9 @@
         ],
         "Topics": []
       }
-    ]
-  },
-  "Logging": {
-    "Type": "File"
+    ],
+    "Logging": {
+      "Type": "Console"
+    }
   }
 }
