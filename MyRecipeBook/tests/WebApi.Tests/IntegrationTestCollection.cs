@@ -4,3 +4,7 @@ namespace WebApi.Tests;
 public class IntegrationTestCollection : ICollectionFixture<MyRecipeBookApplicationFactory>
 {
 }
+[CollectionDefinition(nameof(ServiceBusIntegrationTestCollection))]
+public class ServiceBusIntegrationTestCollection : ICollectionFixture<ServiceBusApplicationFactory>
+{
+}

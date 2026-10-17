@@ -5,6 +5,7 @@ using WebApi.Tests.Resources;
 
 namespace WebApi.Tests.User.DeleteAccount;
 
+[Collection(nameof(ServiceBusIntegrationTestCollection))]
 public class DeleteUserAccountTests : BaseIntegrationTest<ServiceBusApplicationFactory>
 {
     public const string REQUEST_URI = "users";

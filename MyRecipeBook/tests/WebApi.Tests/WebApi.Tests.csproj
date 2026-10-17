@@ -28,6 +28,10 @@
     <ProjectReference Include="..\..\src\Backend\MyRecipeBook.Api\MyRecipeBook.Api.csproj" />
     <ProjectReference Include="..\CommonTestUtilities\CommonTestUtilities.csproj" />
   </ItemGroup>
+  <ItemGroup>
+	<None Update="ServiceBusConfig.json"
+			 CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />
