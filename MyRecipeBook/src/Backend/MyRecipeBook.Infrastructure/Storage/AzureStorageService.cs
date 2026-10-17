@@ -66,9 +66,9 @@ internal sealed class AzureStorageService : IStorageService
             .ToString();
     }
 
-    public async Task DeleteUserFiles(User user)
+    public async Task DeleteUserFiles(Guid userId)
     {
-        var containterClient = _blobServiceClient.GetBlobContainerClient(user.Id.ToString());
+        var containterClient = _blobServiceClient.GetBlobContainerClient(userId.ToString());
 
         await containterClient.DeleteIfExistsAsync();
     }

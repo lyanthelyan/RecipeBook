@@ -1,5 +1,4 @@
-﻿using Azure.Storage.Blobs;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using MyRecipeBook.Domain.Extensions;
 using MyRecipeBook.Infrastructure.DataAcess;
 using System.Net.Http.Headers;
@@ -14,7 +13,6 @@ public abstract class BaseIntegrationTest : IAsyncLifetime, IDisposable
     private readonly IServiceScope _scope;
     private readonly HttpClient _httpClient;
     internal readonly MyRecipeBookDbContext DbContext;
-    internal readonly BlobServiceClient BlobServiceClient;
 
     public BaseIntegrationTest(MyRecipeBookApplicationFactory factory)
     {
@@ -24,7 +22,6 @@ public abstract class BaseIntegrationTest : IAsyncLifetime, IDisposable
         _scope = factory.Services.CreateScope();
 
         DbContext = _scope.ServiceProvider.GetRequiredService<MyRecipeBookDbContext>();
-        BlobServiceClient = _scope.ServiceProvider.GetRequiredService<BlobServiceClient>();
     }
 
     public async Task InitializeAsync()

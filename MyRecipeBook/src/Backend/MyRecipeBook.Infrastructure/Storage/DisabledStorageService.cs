@@ -10,7 +10,7 @@ public class DisabledStorageService : IStorageService
         return Task.CompletedTask;
     }
 
-    public Task DeleteUserFiles(User user)
+    public Task DeleteUserFiles(Guid userId)
     {
         return Task.CompletedTask;
     }

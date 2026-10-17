@@ -1,5 +1,6 @@
 ﻿using CommonTestUtilities.AI;
 using CommonTestUtilities.Entities;
+using CommonTestUtilities.Storage;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -7,12 +8,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Moq;
 using MyRecipeBook.Domain.AI;
 using MyRecipeBook.Domain.Security.PasswordHashing;
 using MyRecipeBook.Domain.Security.Tokens;
+using MyRecipeBook.Domain.Storage;
 using MyRecipeBook.Infrastructure.DataAcess;
-using Testcontainers.Azurite;
 using Testcontainers.MsSql;
+using Testcontainers.ServiceBus;
 using WebApi.Tests.Resources;
 
 namespace WebApi.Tests;
@@ -24,14 +27,15 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
     private MyRecipeBook.Domain.Entities.User _user = default!;
     private MyRecipeBook.Domain.Entities.Recipe _recipe = default!;
     private readonly MsSqlContainer _msSqlContainer;
-    private readonly AzuriteContainer _azuriteContainer;
-    
+    protected readonly ServiceBusContainer _serviceBusContainer;
+    public Mock<IStorageService> StorageMock { get; } =
+        Mock.Get(IStorageServiceBuilder.Build());
+
     public MyRecipeBookApplicationFactory()
     {
         _msSqlContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU10-ubuntu-22.04")
             .Build();
-        _azuriteContainer = new AzuriteBuilder("mcr.microsoft.com/azure-storage/azurite:latest")
-        .Build();
+        _serviceBusContainer = new ServiceBusBuilder("mcr.microsoft.com/azure-messaging/servicebus-emulator:latest");
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -44,8 +48,6 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
                 new Dictionary<string, string?>
                 {
                     ["ConnectionStrings:DefaultConnection"] = _msSqlContainer
-                        .GetConnectionString(),
-                    ["ConnectionStrings:BlobStorage"] = _azuriteContainer
                         .GetConnectionString()
                 });
         })
@@ -53,13 +55,15 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
         {
             services.RemoveAll<IGenerateRecipeAI>();
             services.AddScoped(_ => IGenerateRecipeAIBuilder.Build());
+            services.RemoveAll<IStorageService>();
+            services.AddSingleton<IStorageService>(StorageMock.Object);
+
         });
     }
 
     public async Task InitializeAsync()
     {
         await _msSqlContainer.StartAsync();
-        await _azuriteContainer.StartAsync();
 
         await using var scope = Services.CreateAsyncScope();
         
@@ -104,7 +108,6 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
     {
         await base.DisposeAsync();
         await _msSqlContainer.DisposeAsync();
-        await _azuriteContainer.DisposeAsync();
         
     }
 }

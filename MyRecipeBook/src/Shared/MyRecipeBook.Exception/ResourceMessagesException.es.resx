@@ -207,4 +207,7 @@
   <data name="UNABLE_TO_GENERATE_RECIPE" xml:space="preserve">
     <value>No fue posible generar la receta.</value>
   </data>
+  <data name="UNABLE_TO_UPDATE_PASSWORD" xml:space="preserve">
+    <value>Se ha producido un error, no se ha podido actualizar la contraseña.</value>
+  </data>
 </root>

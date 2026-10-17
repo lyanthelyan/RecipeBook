@@ -1,6 +1,8 @@
 ﻿using CommonTestUtilities.Files;
+using Moq;
 using MyRecipeBook.Domain.Entities;
 using MyRecipeBook.Domain.Extensions;
+using MyRecipeBook.Domain.Storage;
 using MyRecipeBook.Exception;
 using Shouldly;
 using System.Globalization;
@@ -14,12 +16,14 @@ public class ChangeProfilePictureTests : BaseIntegrationTest
 {
     private const string REQUEST_URI = "users/profile-picture";
     private const string FILE_FIELD_NAME = "profilePicture";
+    private readonly Mock<IStorageService> _storageMock;
 
     private readonly UserIdentityManager _user1;
 
     public ChangeProfilePictureTests(MyRecipeBookApplicationFactory factory) : base(factory)
     {
         _user1 = factory.User1;
+        _storageMock = factory.StorageMock;
     }
 
     [Fact]
@@ -32,11 +36,13 @@ public class ChangeProfilePictureTests : BaseIntegrationTest
             FILE_FIELD_NAME);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
-        
-        var existImageInStorage = await BlobServiceClient.GetBlobContainerClient(_user1.GetId().ToString())
-            .GetBlobClient("profile-picture")
-            .ExistsAsync();
-        existImageInStorage.Value.ShouldBeTrue();
+
+        _storageMock.Verify(service =>
+        service.UploadProfilePicture(
+            It.Is<MyRecipeBook.Domain.Entities.User>(user => user.Id == _user1.GetId()),
+            It.IsAny<Stream>(),
+            It.IsAny<string>()),
+        Times.Once);
     }
 
     [Theory]

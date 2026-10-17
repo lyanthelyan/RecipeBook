@@ -207,4 +207,7 @@
   <data name="UNABLE_TO_GENERATE_RECIPE" xml:space="preserve">
     <value>Não foi possível gerar a receita.</value>
   </data>
+  <data name="UNABLE_TO_UPDATE_PASSWORD" xml:space="preserve">
+    <value>Ocorreu um erro, não foi possível atualizar a senha.</value>
+  </data>
 </root>

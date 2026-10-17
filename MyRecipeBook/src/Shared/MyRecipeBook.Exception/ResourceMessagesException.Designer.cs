@@ -70,6 +70,15 @@ namespace MyRecipeBook.Exception {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An error occurred, unable to update the password..
+        /// </summary>
+        public static string UNABLE_TO_UPDATE_PASSWORD {
+            get {
+                return ResourceManager.GetString("UNABLE_TO_UPDATE_PASSWORD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unknown error..
         /// </summary>
         public static string UNKNOWN_ERROR {
