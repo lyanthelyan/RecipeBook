@@ -4,7 +4,7 @@ namespace WebApi.Tests;
 public class IntegrationTestCollection : ICollectionFixture<MyRecipeBookApplicationFactory>
 {
 }
-[CollectionDefinition(nameof(ServiceBusIntegrationTestCollection))]
+[CollectionDefinition(nameof(ServiceBusIntegrationTestCollection), DisableParallelization = true)]
 public class ServiceBusIntegrationTestCollection : ICollectionFixture<ServiceBusApplicationFactory>
 {
 }
