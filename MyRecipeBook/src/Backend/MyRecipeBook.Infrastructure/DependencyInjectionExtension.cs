@@ -83,6 +83,7 @@ public static class DependencyInjectionExtension
             services.AddScoped<IVerificationCodeWriteOnlyRepository, VerificationCodeRepository>();
             services.AddScoped<IVerificationCodeReadOnlyRepository, VerificationCodeRepository>();
             services.AddScoped<IRefreshTokenWriteOnlyRepository, RefreshTokenRepository>();
+            services.AddScoped<IRefreshTokenReadOnlyRepository, RefreshTokenRepository>();
 
         }
         private void AddTokensHandlers(IConfiguration configuration)
