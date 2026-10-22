@@ -4,13 +4,21 @@ using MyRecipeBook.Domain.Repositories.RefreshToken;
 
 namespace MyRecipeBook.Infrastructure.DataAcess.Repositories;
 
-internal sealed class RefreshTokenRepository : IRefreshTokenWriteOnlyRepository
+internal sealed class RefreshTokenRepository : IRefreshTokenWriteOnlyRepository, IRefreshTokenReadOnlyRepository
 {
     private readonly MyRecipeBookDbContext _dbContext;
     public RefreshTokenRepository(MyRecipeBookDbContext dbContext)
     {
         _dbContext = dbContext;
     }
+
+    public async Task<RefreshToken?> Get(string refreshToken)
+    {
+        return await _dbContext.RefreshTokens
+            .AsNoTracking()
+            .SingleOrDefaultAsync(token => token.Active && token.Value.Equals(refreshToken));
+    }
+
     public async Task Replace(RefreshToken refreshToken)
     {
         var existingTokens = await _dbContext.RefreshTokens
