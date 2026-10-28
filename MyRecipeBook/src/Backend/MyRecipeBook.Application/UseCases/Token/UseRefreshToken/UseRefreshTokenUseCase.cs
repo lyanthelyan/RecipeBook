@@ -43,10 +43,12 @@ public class UseRefreshTokenUseCase : IUseRefreshTokenUseCase
             throw new RefreshTokenExpiredException();
 
         var isValid = refreshToken.CreatedOn.AddDays(ExpirationTimeInDays) >= DateTimeOffset.UtcNow;
-        if(isValid is false)
+        if (isValid is false)
             throw new RefreshTokenExpiredException();
 
         var user = await _userReadOnlyRepository.GetById(refreshToken.UserId);
+        if (user is null || !user.Active)
+            throw new RefreshTokenExpiredException();
 
         var newRefreshToken = new RefreshToken
         {

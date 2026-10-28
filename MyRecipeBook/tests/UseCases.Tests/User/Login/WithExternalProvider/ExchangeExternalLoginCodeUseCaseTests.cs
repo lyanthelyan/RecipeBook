@@ -70,13 +70,13 @@ public class ExchangeExternalLoginCodeUseCaseTests
         var (user, _) = UserBuilder.Build();
         var verificationCode = VerificationCodeBuilder.Build(user);
         verificationCode.Type = VerificationCodeType.ExternalLoginExchange;
-        verificationCode.CreatedOn = DateTime.UtcNow.AddSeconds(-30);
+        verificationCode.CreatedOn = DateTimeOffset.UtcNow.AddSeconds(-31);
 
         var request = new RequestExternalLoginJson
         {
             Code = verificationCode.Code
         };
-        var useCase = CreateUseCase();
+        var useCase = CreateUseCase(verificationCode, user);
         
         var exception = await useCase.Execute(request).ShouldThrowAsync<ErrorOnValidationException>();
 
@@ -92,9 +92,33 @@ public class ExchangeExternalLoginCodeUseCaseTests
     }
 
 
+    [Fact]
+    public async Task ShouldThrowException_WhenCodeWasAlreadyConsumed()
+    {
+        var (user, _) = UserBuilder.Build();
+        var verificationCode = VerificationCodeBuilder.Build(user);
+        verificationCode.Type = VerificationCodeType.ExternalLoginExchange;
+
+        var request = new RequestExternalLoginJson
+        {
+            Code = verificationCode.Code
+        };
+        var useCase = CreateUseCase(verificationCode, user, deletedRows: 0);
+
+        var exception = await useCase.Execute(request).ShouldThrowAsync<ErrorOnValidationException>();
+
+        exception.GetStatusCode().ShouldBe(HttpStatusCode.BadRequest);
+        exception.GetErrorMessages().ShouldSatisfyAllConditions(errorMessages =>
+        {
+            errorMessages.Count.ShouldBe(1);
+            errorMessages.ShouldContain(ResourceMessagesException.VERIFICATION_CODE_INVALID);
+        });
+    }
+
     private static ExchangeExternalLoginCodeUseCase CreateUseCase(
     VerificationCode? verificationCode = null,
-    MyRecipeBook.Domain.Entities.User? user = null)
+    MyRecipeBook.Domain.Entities.User? user = null,
+    int deletedRows = 1)
     {
         var verificationCodeReadOnlyRepositoryBuilder =
             new IVerificationCodeReadOnlyRepositoryBuilder();
@@ -110,7 +134,7 @@ public class ExchangeExternalLoginCodeUseCaseTests
             userReadOnlyRepositoryBuilder.GetById(user);
 
         var verificationCodeWriteOnlyRepository =
-            IVerificationCodeWriteOnlyRepositoryBuilder.Build();
+            IVerificationCodeWriteOnlyRepositoryBuilder.Build(deletedRows);
 
         var accessTokenGenerator =
             IAcessTokenGeneratorBuilder.Build();
@@ -118,11 +142,18 @@ public class ExchangeExternalLoginCodeUseCaseTests
         var storageService =
             IStorageServiceBuilder.Build();
 
+        var refreshTokenGenerator = IRefreshTokenGeneratorBuilder.Build();
+        var refreshTokenWriteOnlyRepository = IRefreshTokenWriteOnlyRepositoryBuilder.Build();
+        var unitOfWork = IUnitOfWorkBuilder.Build();
+
         return new ExchangeExternalLoginCodeUseCase(
             verificationCodeReadOnlyRepositoryBuilder.Build(),
             verificationCodeWriteOnlyRepository,
             userReadOnlyRepositoryBuilder.Build(),
             accessTokenGenerator,
-            storageService);
+            storageService,
+            refreshTokenGenerator,
+            refreshTokenWriteOnlyRepository,
+            unitOfWork);
     }
 }
