@@ -5,7 +5,7 @@ using MyRecipeBook.Domain.Security.Tokens;
 using System.Security.Claims;
 using System.Text;
 
-namespace MyRecipeBook.Infrastructure.Security.Tokens;
+namespace MyRecipeBook.Infrastructure.Security.Tokens.Access;
 
 internal sealed class JwtTokenHandler : IAccessTokensGenerator
 {

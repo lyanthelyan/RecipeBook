@@ -76,11 +76,23 @@ internal sealed class UserRepository : IUserWriteOnlyRepository, IUserReadOnlyRe
             .SingleOrDefaultAsync(user => user.Active == false && user.Id == userId);
         if (user is not null)
         {
-            var recipes = await _dbContext.Recipes.Where(recipe => recipe.UserId == userId).ToListAsync();
+            var recipes = await _dbContext.Recipes
+                .Where(recipe => recipe.UserId == userId)
+                .ToListAsync();
+                
             _dbContext.Recipes.RemoveRange(recipes);
 
-            var verificationCodes = await _dbContext.VerificationCodes.Where(verificationCode => verificationCode.UserId == userId).ToListAsync();
+            var verificationCodes = await _dbContext.VerificationCodes
+                .Where(verificationCode => verificationCode.UserId == userId)
+                .ToListAsync();
+                
             _dbContext.VerificationCodes.RemoveRange(verificationCodes);
+
+            var refreshTokens = await _dbContext.RefreshTokens
+                .Where(refreshToken => refreshToken.UserId == userId)
+                .ToListAsync();
+
+            _dbContext.RefreshTokens.RemoveRange(refreshTokens);
 
             _dbContext.Users.Remove(user);
         }

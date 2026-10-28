@@ -1,6 +1,9 @@
 ﻿using CommonTestUtilities.AI;
 using CommonTestUtilities.Entities;
 using CommonTestUtilities.Storage;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
+using DotNet.Testcontainers.Networks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -9,11 +12,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
+using MyRecipeBook.Api.BackgroundServices;
 using MyRecipeBook.Domain.AI;
 using MyRecipeBook.Domain.Security.PasswordHashing;
 using MyRecipeBook.Domain.Security.Tokens;
 using MyRecipeBook.Domain.Storage;
 using MyRecipeBook.Infrastructure.DataAcess;
+using System.Diagnostics;
 using Testcontainers.MsSql;
 using Testcontainers.ServiceBus;
 using WebApi.Tests.Resources;
@@ -27,15 +32,41 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
     private MyRecipeBook.Domain.Entities.User _user = default!;
     private MyRecipeBook.Domain.Entities.Recipe _recipe = default!;
     private readonly MsSqlContainer _msSqlContainer;
-    protected readonly ServiceBusContainer _serviceBusContainer;
+    private readonly ServiceBusContainer? _serviceBusContainer;
+    private readonly INetwork? _network;
     public Mock<IStorageService> StorageMock { get; } =
         Mock.Get(IStorageServiceBuilder.Build());
 
     public MyRecipeBookApplicationFactory()
+        : this(false)
     {
-        _msSqlContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU10-ubuntu-22.04")
-            .Build();
-        _serviceBusContainer = new ServiceBusBuilder("mcr.microsoft.com/azure-messaging/servicebus-emulator:latest");
+    }
+
+    protected MyRecipeBookApplicationFactory(bool useServiceBus)
+    {
+        var sqlBuilder = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU10-ubuntu-22.04")
+            .WithDatabase("MyRecipeBookTests")
+            .WithTmpfsMount("/var/opt/mssql/data")
+            .WithPassword(MsSqlBuilder.DefaultPassword);
+
+        if (useServiceBus)
+        {
+            _network = new NetworkBuilder().Build();
+            sqlBuilder = sqlBuilder.WithNetwork(_network)
+                .WithNetworkAliases(ServiceBusBuilder.DatabaseNetworkAlias);
+        }
+
+        _msSqlContainer = sqlBuilder.Build();
+
+        if (useServiceBus)
+        {
+            _serviceBusContainer = new ServiceBusBuilder("mcr.microsoft.com/azure-messaging/servicebus-emulator:latest")
+                .WithAcceptLicenseAgreement(true)
+                .WithMsSqlContainer(_network!, _msSqlContainer,
+                    ServiceBusBuilder.DatabaseNetworkAlias, MsSqlBuilder.DefaultPassword)
+                .WithConfig(Path.Combine(AppContext.BaseDirectory, "ServiceBusConfig.json"))
+                .Build();
+        }
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -47,24 +78,50 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
             configuration.AddInMemoryCollection(
                 new Dictionary<string, string?>
                 {
-                    ["ConnectionStrings:DefaultConnection"] = _msSqlContainer
-                        .GetConnectionString()
+                    ["ConnectionStrings:DefaultConnection"] =
+                        _msSqlContainer.GetConnectionString()
                 });
+
+            if (_serviceBusContainer?.State == TestcontainersStates.Running)
+            {
+                configuration.AddInMemoryCollection(
+                    new Dictionary<string, string?>
+                    {
+                        ["ConnectionStrings:ServiceBus"] =
+                            _serviceBusContainer.GetConnectionString()
+                    });
+            }
         })
         .ConfigureTestServices(services =>
         {
             services.RemoveAll<IGenerateRecipeAI>();
             services.AddScoped(_ => IGenerateRecipeAIBuilder.Build());
+
             services.RemoveAll<IStorageService>();
             services.AddSingleton<IStorageService>(StorageMock.Object);
 
+            if (_serviceBusContainer?.State == TestcontainersStates.Running)
+            {
+                services.AddHostedService<DeleteUserAccountConsumer>();
+            }
+            else
+            {
+                var consumer = services.SingleOrDefault(service =>
+                    service.ImplementationType == typeof(DeleteUserAccountConsumer));
+
+                if (consumer is not null)
+                    services.Remove(consumer);
+            }
         });
     }
 
-    public async Task InitializeAsync()
+    public async virtual Task InitializeAsync()
     {
-        await _msSqlContainer.StartAsync();
-
+        if (_serviceBusContainer is not null)
+            await _serviceBusContainer.StartAsync();
+        else
+            await _msSqlContainer.StartAsync();
+        
         await using var scope = Services.CreateAsyncScope();
         
         var passwordHasher = scope.ServiceProvider
@@ -95,6 +152,7 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
             .GetRequiredService<MyRecipeBookDbContext>();
 
         await dbContext.VerificationCodes.ExecuteDeleteAsync();
+        await dbContext.RefreshTokens.ExecuteDeleteAsync();
         await dbContext.Recipes.ExecuteDeleteAsync();
         await dbContext.Users.ExecuteDeleteAsync();
 
@@ -107,7 +165,11 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
     async Task IAsyncLifetime.DisposeAsync()
     {
         await base.DisposeAsync();
-        await _msSqlContainer.DisposeAsync();
+        if (_serviceBusContainer is not null)
+            await _serviceBusContainer.DisposeAsync();
         
+        await _msSqlContainer.DisposeAsync();
+        if (_network is not null)
+            await _network.DisposeAsync();
     }
 }

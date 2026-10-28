@@ -9,6 +9,7 @@ using MyRecipeBook.Domain.Identity;
 using MyRecipeBook.Domain.Messaging;
 using MyRecipeBook.Domain.Repositories;
 using MyRecipeBook.Domain.Repositories.Recipe;
+using MyRecipeBook.Domain.Repositories.RefreshToken;
 using MyRecipeBook.Domain.Repositories.User;
 using MyRecipeBook.Domain.Repositories.VerificationCode;
 using MyRecipeBook.Domain.Security.PasswordHashing;
@@ -21,6 +22,8 @@ using MyRecipeBook.Infrastructure.Identity;
 using MyRecipeBook.Infrastructure.Messaging;
 using MyRecipeBook.Infrastructure.Security.PasswordHashing;
 using MyRecipeBook.Infrastructure.Security.Tokens;
+using MyRecipeBook.Infrastructure.Security.Tokens.Access;
+using MyRecipeBook.Infrastructure.Security.Tokens.Refresh;
 using MyRecipeBook.Infrastructure.Storage;
 using OpenAI;
 using OpenAI.Chat;
@@ -74,13 +77,14 @@ public static class DependencyInjectionExtension
             services.AddScoped<IUserWriteOnlyRepository, UserRepository>();
             services.AddScoped<IUserReadOnlyRepository, UserRepository>();
             services.AddScoped<IUserUpdateOnlyRepository, UserRepository>();
-
             services.AddScoped<IRecipeWriteOnlyRepository, RecipeRepository>();
             services.AddScoped<IRecipeReadOnlyRepository, RecipeRepository>();
             services.AddScoped<IRecipeUpdateOnlyRepository, RecipeRepository>();
             services.AddScoped<IVerificationCodeWriteOnlyRepository, VerificationCodeRepository>();
             services.AddScoped<IVerificationCodeReadOnlyRepository, VerificationCodeRepository>();
-            
+            services.AddScoped<IRefreshTokenWriteOnlyRepository, RefreshTokenRepository>();
+            services.AddScoped<IRefreshTokenReadOnlyRepository, RefreshTokenRepository>();
+
         }
         private void AddTokensHandlers(IConfiguration configuration)
         {
@@ -90,6 +94,7 @@ public static class DependencyInjectionExtension
                 var signingkey = configuration.GetValue<string>("Jwt:SigningKey")!;
                 return new JwtTokenHandler(expirationTimeInMinutes, signingkey);
             });
+            services.AddScoped<IRefreshTokenGenerator, RefreshTokenGenerator>();
         }
 
         private void AddOpenAi(IConfiguration configuration)

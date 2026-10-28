@@ -2,7 +2,9 @@
 using Mapster;
 using MyRecipeBook.Communication.Requests;
 using MyRecipeBook.Communication.Responses;
+using MyRecipeBook.Domain.Entities;
 using MyRecipeBook.Domain.Repositories;
+using MyRecipeBook.Domain.Repositories.RefreshToken;
 using MyRecipeBook.Domain.Repositories.User;
 using MyRecipeBook.Domain.Security.PasswordHashing;
 using MyRecipeBook.Domain.Security.Tokens;
@@ -18,18 +20,24 @@ public class RegisterUserAccountUseCase : IRegisterUserAccountUseCase
     private readonly IUserReadOnlyRepository _userReadOnlyRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAccessTokensGenerator _acessTokenGenerator;
+    private readonly IRefreshTokenGenerator _refreshTokenGenerator;
+    private readonly IRefreshTokenWriteOnlyRepository _refreshTokenWriteOnlyRepository;
     public RegisterUserAccountUseCase(
         IPasswordHasher passwordHasher, 
         IUserWriteOnlyRepository userWriteOnlyRepository,
         IUnitOfWork unitOfWork,
         IUserReadOnlyRepository userReadOnlyRepository,
-        IAccessTokensGenerator acessTokenGenerator)
+        IAccessTokensGenerator acessTokenGenerator,
+        IRefreshTokenGenerator refreshTokenGenerator,
+        IRefreshTokenWriteOnlyRepository refreshTokenWriteOnlyRepository)
     {
         _passwordHasher = passwordHasher;
         _userWriteOnlyRepository = userWriteOnlyRepository;
         _unitOfWork = unitOfWork;
         _userReadOnlyRepository = userReadOnlyRepository;
         _acessTokenGenerator = acessTokenGenerator;
+        _refreshTokenGenerator = refreshTokenGenerator;
+        _refreshTokenWriteOnlyRepository = refreshTokenWriteOnlyRepository;
     }
 
     public async Task<ResponseRegisteredUserJson> Execute(RequestRegisterUserAccountJson request)
@@ -41,6 +49,9 @@ public class RegisterUserAccountUseCase : IRegisterUserAccountUseCase
         user.Password = _passwordHasher.HashPassword(request.Password);
 
         await _userWriteOnlyRepository.Add(user);
+
+        var refreshToken = await GenerateAndSaveRefreshToken(user.Id);
+
         await _unitOfWork.Commit();
 
         return new ResponseRegisteredUserJson
@@ -48,12 +59,13 @@ public class RegisterUserAccountUseCase : IRegisterUserAccountUseCase
             Name = user.Name,
             Tokens =
             {
-                AccessToken = _acessTokenGenerator.Generate(user)
+                AccessToken = _acessTokenGenerator.Generate(user),
+                RefreshToken = refreshToken
             }
         };
     }
 
-    public async Task ValidateAndThrowOnFailures(RequestRegisterUserAccountJson request)
+    private async Task ValidateAndThrowOnFailures(RequestRegisterUserAccountJson request)
     {
         var validator = new RegisterUserAccountValidator();
 
@@ -73,5 +85,17 @@ public class RegisterUserAccountUseCase : IRegisterUserAccountUseCase
                 .ToList();
             throw new ErrorOnValidationException(errorMessages);
         }
+    }
+    private async Task<string> GenerateAndSaveRefreshToken(Guid userId)
+    {
+        var refreshToken = new RefreshToken
+        {
+            Value = _refreshTokenGenerator.Generate(),
+            UserId = userId
+        };
+        
+        await _refreshTokenWriteOnlyRepository.Replace(refreshToken);
+        
+        return refreshToken.Value;
     }
 }
