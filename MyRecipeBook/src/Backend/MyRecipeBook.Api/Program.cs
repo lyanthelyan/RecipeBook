@@ -171,13 +171,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             {
                 context.HandleResponse();
 
-                context.Response.StatusCode =
-                    StatusCodes.Status401Unauthorized;
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
 
                 context.Response.ContentType = "application/json";
 
                 var response = context.AuthenticateFailure switch
-                {
+                {   
                     null => new ResponseErrorJson(
                         ResourceMessagesException
                             .VALIDATION_ACCESS_TOKEN_REQUIRED),

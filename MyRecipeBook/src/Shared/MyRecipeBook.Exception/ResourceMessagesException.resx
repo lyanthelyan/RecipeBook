@@ -210,4 +210,7 @@
   <data name="UNABLE_TO_UPDATE_PASSWORD" xml:space="preserve">
     <value>An error occurred, unable to update the password.</value>
   </data>
+  <data name="EXPIRED_REFRESH_TOKEN" xml:space="preserve">
+    <value>Oops! Your session has expired. Please log in again.</value>
+  </data>
 </root>

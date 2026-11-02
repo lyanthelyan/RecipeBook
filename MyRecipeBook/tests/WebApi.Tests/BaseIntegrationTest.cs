@@ -7,21 +7,33 @@ using System.Net.Http.Json;
 namespace WebApi.Tests;
 
 [Collection(nameof(IntegrationTestCollection))]
-public abstract class BaseIntegrationTest : IAsyncLifetime, IDisposable
+public abstract class BaseIntegrationTest
+    : BaseIntegrationTest<MyRecipeBookApplicationFactory>
 {
-    private readonly MyRecipeBookApplicationFactory _factory;
+    protected BaseIntegrationTest(MyRecipeBookApplicationFactory factory)
+        : base(factory)
+    {
+    }
+}
+
+public abstract class BaseIntegrationTest<TFactory> : IAsyncLifetime, IDisposable
+    where TFactory : MyRecipeBookApplicationFactory
+{
+    private readonly TFactory _factory;
     private readonly IServiceScope _scope;
     private readonly HttpClient _httpClient;
+
     internal readonly MyRecipeBookDbContext DbContext;
 
-    public BaseIntegrationTest(MyRecipeBookApplicationFactory factory)
+    protected BaseIntegrationTest(TFactory factory)
     {
         _factory = factory;
         _httpClient = factory.CreateClient();
 
         _scope = factory.Services.CreateScope();
 
-        DbContext = _scope.ServiceProvider.GetRequiredService<MyRecipeBookDbContext>();
+        DbContext = _scope.ServiceProvider
+            .GetRequiredService<MyRecipeBookDbContext>();
     }
 
     public async Task InitializeAsync()
@@ -34,50 +46,85 @@ public abstract class BaseIntegrationTest : IAsyncLifetime, IDisposable
         return Task.CompletedTask;
     }
 
-    protected async Task<HttpResponseMessage> Post(string requestUri, object request, string accessToken = "",string culture = "en-US")
+    protected async Task<HttpResponseMessage> Post(
+        string requestUri,
+        object request,
+        string accessToken = "",
+        string culture = "en-US")
     {
         ChangeRequestCulture(culture);
         AuthorizeRequest(accessToken);
+
         return await _httpClient.PostAsJsonAsync(requestUri, request);
     }
 
-    protected async Task<HttpResponseMessage> Get(string requestUri, string accessToken, string culture = "en-US")
+    protected async Task<HttpResponseMessage> Get(
+        string requestUri,
+        string accessToken,
+        string culture = "en-US")
     {
         ChangeRequestCulture(culture);
         AuthorizeRequest(accessToken);
+
         return await _httpClient.GetAsync(requestUri);
     }
 
-    protected async Task<HttpResponseMessage> Put(string requestUri, object request, string accessToken, string culture = "en-US")
+    protected async Task<HttpResponseMessage> Put(
+        string requestUri,
+        object request,
+        string accessToken,
+        string culture = "en-US")
     {
         ChangeRequestCulture(culture);
         AuthorizeRequest(accessToken);
+
         return await _httpClient.PutAsJsonAsync(requestUri, request);
     }
 
-    protected async Task<HttpResponseMessage> PutFormData(string requestUri, Stream file, string accessToken, string fileFieldName = "file", string culture = "en-US")
+    protected async Task<HttpResponseMessage> PutFormData(
+        string requestUri,
+        Stream file,
+        string accessToken,
+        string fileFieldName = "file",
+        string culture = "en-US")
     {
         ChangeRequestCulture(culture);
-        AuthorizeRequest(accessToken); 
-        
+        AuthorizeRequest(accessToken);
+
         var content = new MultipartFormDataContent();
-        content.Add(new StreamContent(file), fileFieldName, fileName: fileFieldName);
-        
+
+        content.Add(
+            new StreamContent(file),
+            fileFieldName,
+            fileName: fileFieldName);
+
         return await _httpClient.PutAsync(requestUri, content);
     }
 
-    protected async Task<HttpResponseMessage>  PostFormData(string requestUri,object request, Stream? file = null, string accessToken = "", string fileFieldName = "file", string culture = "en-US")
+    protected async Task<HttpResponseMessage> PostFormData(
+        string requestUri,
+        object request,
+        Stream? file = null,
+        string accessToken = "",
+        string fileFieldName = "file",
+        string culture = "en-US")
     {
         ChangeRequestCulture(culture);
         AuthorizeRequest(accessToken);
+
         var content = BuildFormData(request, file, fileFieldName);
+
         return await _httpClient.PostAsync(requestUri, content);
     }
 
-    protected async Task<HttpResponseMessage> Delete(string requestUri, string accessToken, string culture = "en-US")
+    protected async Task<HttpResponseMessage> Delete(
+        string requestUri,
+        string accessToken,
+        string culture = "en-US")
     {
         ChangeRequestCulture(culture);
         AuthorizeRequest(accessToken);
+
         return await _httpClient.DeleteAsync(requestUri);
     }
 
@@ -90,20 +137,35 @@ public abstract class BaseIntegrationTest : IAsyncLifetime, IDisposable
     private void AuthorizeRequest(string accessToken)
     {
         if (accessToken.IsNotEmpty())
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
+        {
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", accessToken);
+        }
+        else
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = null;
+        }
     }
 
-    private static MultipartFormDataContent BuildFormData(object request, Stream? file, string fileFieldName)
+    private static MultipartFormDataContent BuildFormData(
+        object request,
+        Stream? file,
+        string fileFieldName)
     {
         var content = new MultipartFormDataContent();
 
         if (file is not null)
-            content.Add(new StreamContent(file), fileFieldName, fileName: fileFieldName);
+        {
+            content.Add(
+                new StreamContent(file),
+                fileFieldName,
+                fileName: fileFieldName);
+        }
 
         foreach (var property in request.GetType().GetProperties())
         {
             var value = property.GetValue(request);
+
             if (value is null)
                 continue;
 
@@ -111,6 +173,7 @@ public abstract class BaseIntegrationTest : IAsyncLifetime, IDisposable
             {
                 var itemType = list.GetType().GetGenericArguments().Single();
                 var index = 0;
+
                 foreach (var item in list)
                 {
                     if (itemType.IsClass && itemType != typeof(string))
@@ -118,23 +181,36 @@ public abstract class BaseIntegrationTest : IAsyncLifetime, IDisposable
                         foreach (var itemProperty in item.GetType().GetProperties())
                         {
                             var itemValue = itemProperty.GetValue(item);
-                            content.Add(new StringContent(itemValue!.ToString()!), $"{property.Name}[{index}].{itemProperty.Name}");
+
+                            content.Add(
+                                new StringContent(itemValue!.ToString()!),
+                                $"{property.Name}[{index}].{itemProperty.Name}");
                         }
+
                         index++;
                     }
                     else
-                        content.Add(new StringContent(item.ToString()!), property.Name);
+                    {
+                        content.Add(
+                            new StringContent(item.ToString()!),
+                            property.Name);
+                    }
                 }
             }
             else
-                content.Add(new StringContent(value.ToString()!), property.Name);
+            {
+                content.Add(
+                    new StringContent(value.ToString()!),
+                    property.Name);
+            }
         }
+
         return content;
     }
 
     public void Dispose()
     {
-        _scope?.Dispose();
-        DbContext?.Dispose();
+        _httpClient.Dispose();
+        _scope.Dispose();
     }
 }

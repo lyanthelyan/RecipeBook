@@ -61,6 +61,15 @@ namespace MyRecipeBook.Exception {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Oops! Your session has expired. Please log in again..
+        /// </summary>
+        public static string EXPIRED_REFRESH_TOKEN {
+            get {
+                return ResourceManager.GetString("EXPIRED_REFRESH_TOKEN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to generate the recipe..
         /// </summary>
         public static string UNABLE_TO_GENERATE_RECIPE {

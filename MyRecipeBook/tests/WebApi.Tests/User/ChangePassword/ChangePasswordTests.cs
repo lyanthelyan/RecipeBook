@@ -1,9 +1,6 @@
 ﻿using CommonTestUtilities.Requests;
-using Microsoft.AspNetCore.Http;
 using MyRecipeBook.Communication.Requests;
-using MyRecipeBook.Domain.Extensions;
 using MyRecipeBook.Exception;
-using Org.BouncyCastle.Asn1.Ocsp;
 using Shouldly;
 using System.Globalization;
 using System.Net;

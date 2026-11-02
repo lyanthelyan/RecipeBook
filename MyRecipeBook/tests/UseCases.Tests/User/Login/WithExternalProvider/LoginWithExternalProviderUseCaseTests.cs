@@ -13,7 +13,7 @@ public class LoginWithExternalProviderUseCaseTests
     {
         var (user, _) = UserBuilder.Build();
 
-        var useCase = CreateUseCase();
+        var useCase = CreateUseCase(user);
 
         var code = await useCase.Execute(new ExternalLoginInfo(user.Name, user.Email));
 

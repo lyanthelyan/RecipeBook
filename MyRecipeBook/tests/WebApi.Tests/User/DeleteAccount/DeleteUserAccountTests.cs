@@ -5,11 +5,12 @@ using WebApi.Tests.Resources;
 
 namespace WebApi.Tests.User.DeleteAccount;
 
-public class DeleteUserAccountTests : BaseIntegrationTest
+[Collection(nameof(ServiceBusIntegrationTestCollection))]
+public class DeleteUserAccountTests : BaseIntegrationTest<ServiceBusApplicationFactory>
 {
     public const string REQUEST_URI = "users";
     private readonly UserIdentityManager _user1;
-    public DeleteUserAccountTests(MyRecipeBookApplicationFactory factory) : base(factory)
+    public DeleteUserAccountTests(ServiceBusApplicationFactory factory) : base(factory)
     {
         _user1 = factory.User1;
     }

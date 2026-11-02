@@ -11,6 +11,7 @@ internal class MyRecipeBookDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Recipe> Recipes { get; set; }
     public DbSet<VerificationCode> VerificationCodes { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -48,5 +49,8 @@ internal class MyRecipeBookDbContext : DbContext
 
         modelBuilder.Entity<VerificationCode>()
             .HasOne<User>().WithMany().HasForeignKey(code => code.UserId);
+
+        modelBuilder.Entity<RefreshToken>()
+            .HasOne<User>().WithMany().HasForeignKey(refreshToken => refreshToken.UserId);
     }
 }
