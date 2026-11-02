@@ -32,7 +32,7 @@ public class LoginWithEmailAndPasswordUseCaseTests
         result.Tokens.ShouldNotBeNull();
         result.Name.ShouldBe(user.Name);
         result.Tokens.AccessToken.ShouldNotBeNullOrEmpty();
-        result.Tokens.RefreshToken.ShouldBeNullOrEmpty();
+        result.Tokens.RefreshToken.ShouldNotBeNullOrEmpty();
         result.ImageUrl.ShouldBe(expectedUrl);
     }
     
@@ -72,6 +72,9 @@ public class LoginWithEmailAndPasswordUseCaseTests
         var passwordHasherBuilder = new IPasswordHasherBuilder();
         var userReadOnlyRepositoryBuilder = new IUserReadOnlyRepositoryBuilder();
         var storageServiceBuilder = IStorageServiceBuilder.Build();
+        var refreshTokenGenerator = IRefreshTokenGeneratorBuilder.Build();
+        var refreshTokenWriteOnlyRepository = IRefreshTokenWriteOnlyRepositoryBuilder.Build();
+        var unitOfWork = IUnitOfWorkBuilder.Build();
         if (user is not null)
             userReadOnlyRepositoryBuilder.GetByEmail(user);
         if (password.IsNotEmpty())
@@ -81,6 +84,9 @@ public class LoginWithEmailAndPasswordUseCaseTests
             userReadOnlyRepositoryBuilder.Build(), 
             passwordHasherBuilder.Build(), 
             acessTokenGeneratorBuilder, 
-            storageServiceBuilder);
+            storageServiceBuilder,
+            refreshTokenGenerator,
+            refreshTokenWriteOnlyRepository,
+            unitOfWork);
     }
 }

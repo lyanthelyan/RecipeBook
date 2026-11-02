@@ -152,6 +152,7 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
             .GetRequiredService<MyRecipeBookDbContext>();
 
         await dbContext.VerificationCodes.ExecuteDeleteAsync();
+        await dbContext.RefreshTokens.ExecuteDeleteAsync();
         await dbContext.Recipes.ExecuteDeleteAsync();
         await dbContext.Users.ExecuteDeleteAsync();
 
@@ -166,6 +167,7 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
         await base.DisposeAsync();
         if (_serviceBusContainer is not null)
             await _serviceBusContainer.DisposeAsync();
+        
         await _msSqlContainer.DisposeAsync();
         if (_network is not null)
             await _network.DisposeAsync();
