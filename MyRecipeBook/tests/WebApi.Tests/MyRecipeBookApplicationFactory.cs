@@ -73,6 +73,9 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
     {
         builder.UseEnvironment("Tests");
 
+        if (_serviceBusContainer?.State == TestcontainersStates.Running)
+            builder.UseSetting("ConnectionStrings:ServiceBus", _serviceBusContainer.GetConnectionString());
+
         builder.ConfigureAppConfiguration((context, configuration) =>
         {
             configuration.AddInMemoryCollection(
@@ -82,15 +85,6 @@ public class MyRecipeBookApplicationFactory: WebApplicationFactory<Program>, IAs
                         _msSqlContainer.GetConnectionString()
                 });
 
-            if (_serviceBusContainer?.State == TestcontainersStates.Running)
-            {
-                configuration.AddInMemoryCollection(
-                    new Dictionary<string, string?>
-                    {
-                        ["ConnectionStrings:ServiceBus"] =
-                            _serviceBusContainer.GetConnectionString()
-                    });
-            }
         })
         .ConfigureTestServices(services =>
         {
