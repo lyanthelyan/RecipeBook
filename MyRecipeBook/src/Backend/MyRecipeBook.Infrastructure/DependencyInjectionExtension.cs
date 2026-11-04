@@ -45,11 +45,7 @@ public static class DependencyInjectionExtension
             services.AddMessaging(configuration);
             services.AddScoped<IPasswordHasher, Argon2PasswordHasher>();                             
             services.AddScoped<ILoggedUser, LoggedUser>();
-            //services.AddSingleton(_ =>
-            //{
-            //    var connectionString = configuration.GetConnectionString("BlobStorage")!;
-            //    return new BlobServiceClient(connectionString);
-            //});
+            services.AddBlobStorage(configuration);
             services.AddScoped<IStorageService, DisabledStorageService>();
             services.AddFluentMigratorCore().ConfigureRunner(config =>
             {
@@ -96,7 +92,6 @@ public static class DependencyInjectionExtension
             });
             services.AddScoped<IRefreshTokenGenerator, RefreshTokenGenerator>();
         }
-
         private void AddOpenAi(IConfiguration configuration)
         {
             services.AddSingleton(_ =>
@@ -129,14 +124,28 @@ public static class DependencyInjectionExtension
             });
             services.AddScoped<IGenerateRecipeAI, ChatGptService>();
         }
+        private void AddBlobStorage(IConfiguration configuration)
+        {
+            var connectionString = configuration.GetConnectionString("BlobStorage");
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                services.AddScoped<IStorageService, DisabledStorageService>();
+                return;
+            }
+
+            services.AddSingleton(_ => new BlobServiceClient(connectionString));
+            services.AddScoped<IStorageService, AzureStorageService>();
+        }
 
         private void AddMessaging(IConfiguration configuration)
         {
-            services.AddSingleton(_ =>
-            {
-                var connectionString = configuration.GetConnectionString("ServiceBus")!;
-                return new ServiceBusClient(connectionString);
-            });
+            var connectionString = configuration.GetConnectionString("ServiceBus");
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+                return;
+
+            services.AddSingleton(_ => new ServiceBusClient(connectionString));
             services.AddScoped<IScheduleAccountDeletion, AccountDeletionQueuePublisher>();
         }
     }

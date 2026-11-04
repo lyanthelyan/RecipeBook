@@ -159,7 +159,7 @@ Todos os endpoints de receitas exigem autenticação.
 | `GET` | `/users` | Sim | Retorna o perfil do usuário autenticado. |
 | `PUT` | `/users/profile` | Sim | Atualiza nome e e-mail. |
 | `PUT` | `/users/password` | Sim | Altera a senha. |
-| `POST` | `/authentication` | Não | Realiza login. |
+| `POST` | `/authentication/login` | Não | Realiza login. |
 | `POST` | `/authentication/password-recovery` | Não | Gera e persiste um código de recuperação. |
 | `POST` | `/recipes` | Sim | Cadastra uma receita. |
 | `GET` | `/recipes/{recipeId}` | Sim | Consulta uma receita por ID. |
@@ -209,59 +209,7 @@ Todos os campos são opcionais. Uma request vazia retorna as receitas do usuári
 
 ## Como executar localmente
 
-### Pré-requisitos
-
-- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
-- SQL Server acessível pela aplicação
-- Docker Desktop ou outro runtime compatível, caso queira executar os testes de integração
-
-### 1. Clone e acesse o repositório
-
-```bash
-git clone <url-do-repositorio>
-cd MyRecipeBook
-```
-
-### 2. Configure as variáveis de ambiente
-
-Os valores abaixo são exemplos. Use uma chave JWT longa e mantenha credenciais fora do controle de versão.
-
-PowerShell:
-
-```powershell
-$env:ConnectionStrings__DefaultConnection="Server=localhost,1433;Database=MyRecipeBook;User Id=sa;Password=SUA_SENHA;TrustServerCertificate=True"
-$env:Jwt__SigningKey="SUA_CHAVE_SECRETA_LONGA_E_SEGURA"
-$env:Jwt__ExpirationTimeMinutes="60"
-```
-
-Bash:
-
-```bash
-export ConnectionStrings__DefaultConnection="Server=localhost,1433;Database=MyRecipeBook;User Id=sa;Password=SUA_SENHA;TrustServerCertificate=True"
-export Jwt__SigningKey="SUA_CHAVE_SECRETA_LONGA_E_SEGURA"
-export Jwt__ExpirationTimeMinutes="60"
-```
-
-### 3. Restaure e execute
-
-```bash
-dotnet restore MyRecipeBook/MyRecipeBook.slnx
-dotnet run --project MyRecipeBook/src/Backend/MyRecipeBook.Api
-```
-
-Em ambiente de desenvolvimento, o Swagger fica disponível em:
-
-- `https://localhost:7170/swagger`
-- `http://localhost:5290/swagger`
-
-As migrations são aplicadas automaticamente durante o startup.
-
-### Autenticação pelo Swagger
-
-1. Cadastre um usuário em `POST /users` ou autentique-se em `POST /authentication`.
-2. Copie o `accessToken` retornado.
-3. Clique em **Authorize** no Swagger.
-4. Informe apenas o token; o Swagger adiciona o prefixo `Bearer` automaticamente.
+Consulte o [guia de execução local](MyRecipeBook/README.md) para configurar SQL Server via Docker, User Secrets, JWT, integrações opcionais e executar a API com .NET 10.
 
 ## Testes
 

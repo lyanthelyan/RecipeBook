@@ -1,4 +1,5 @@
 
+using FirebirdSql.Data.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
@@ -23,6 +24,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
+
+DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,7 +70,7 @@ builder.Services
     .AddApplication();
 
 // BusService
-//builder.Services.AddHostedService<DeleteUserAccountConsumer>();
+AddAccountDeletionConsumer(builder.Services, builder.Configuration);
 
 builder.Services.AddOptions<ExternalLoginReturnUrlOptions>()
     .Bind(builder.Configuration.GetSection(ExternalLoginReturnUrlOptions.SectionName));
@@ -108,7 +111,7 @@ builder.Services.AddRouting(options =>
     options.LowercaseUrls = true);
 
 // Configures JWT authentication.
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+var authentication = builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(jwtOptions =>
     {
         var signingKey =
@@ -194,8 +197,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 await context.Response.WriteAsJsonAsync(response);
             }
         }; ;
-    })
-    .AddGoogleOpenIdConnect(googleOptions =>
+    });
+
+if (!builder.Environment.IsDevelopment() ||
+    (!string.IsNullOrWhiteSpace(builder.Configuration["Settings:Google:ClientId"]) &&
+     !string.IsNullOrWhiteSpace(builder.Configuration["Settings:Google:ClientSecret"])))
+{
+    authentication.AddGoogleOpenIdConnect(googleOptions =>
     {
         googleOptions.ClientId = builder.Configuration
             .GetValue<string>("Settings:Google:ClientId")!;
@@ -203,11 +211,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .GetValue<string>("Settings:Google:ClientSecret")!;
         googleOptions.CallbackPath = "/signin-google";
         googleOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    })
-    .AddCookie(options =>
-    {
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
     });
+}
+
+authentication.AddCookie(options =>
+{
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+});
 // Requests Limiter
 builder.Services.AddRateLimiter(options =>
 {
@@ -227,8 +237,6 @@ builder.Services.AddRateLimiter(options =>
 
 var app = builder.Build();
 
-
-
 // Applies the configured localization rules to each request.
 var localizationOptions =
     app.Services.GetRequiredService<
@@ -236,10 +244,9 @@ var localizationOptions =
 
 app.UseRequestLocalization(localizationOptions.Value);
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() ||
+    app.Configuration.GetValue<bool>("Swagger:Enabled"))
 {
-    app.MapOpenApi();
-
     app.UseSwagger();
     app.UseSwaggerUI();
 }
@@ -263,6 +270,17 @@ async Task ExecuteMigrations()
     await using var scope = app.Services.CreateAsyncScope();
 
     DatabaseMigration.ExecuteMigrations(scope.ServiceProvider);
+}
+static void AddAccountDeletionConsumer(
+    IServiceCollection services,
+    IConfiguration configuration)
+{
+    var connectionString = configuration.GetConnectionString("ServiceBus");
+
+    if (string.IsNullOrWhiteSpace(connectionString))
+        return;
+
+    services.AddHostedService<DeleteUserAccountConsumer>();
 }
 
 public partial class Program { }
